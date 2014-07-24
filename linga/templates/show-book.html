@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>{{book.name}}</title>
+	<link type="text/css" rel="stylesheet" href="{{url_for('static', filename='css/styles.css')}}">
+	<script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+	<script src="{{url_for('static', filename='js/comicview.js')}}"></script>
+</head>
+<body>
+	<div class="header">
+		<h3>{{book.name}}</h3>
+		<p>File: {{book.rel_path}}</p>
+	</div>
+	<div class="pages">
+		<ul class="page-list">
+			{% for file in book.get_file_list() %}
+			<li>
+				<a class="page-link" title="{{file}}" data-index="{{loop.index}}"
+				   href="{{url_for('show_page', book=book.disp_relpath(), page=loop.index)}}">
+					{{loop.index}}
+				</a>
+			</li>
+			{% endfor%}
+		</ul>
+	</div>
+	<div class="image-content">
+		<img class="main-image" src="{{url_for('show_page', book=book.disp_relpath(), page=1)}}" alt="">
+	</div>
+</body>
+</html>

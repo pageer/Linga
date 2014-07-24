@@ -1,0 +1,15 @@
+.pages .page-list {
+	list-style: none;
+}
+
+.pages .page-list li {
+	display: inline-block;
+}
+
+.pages .page-list .current-img {
+	background-color: #00f;
+}
+
+.image-content {
+	text-align: center;
+}

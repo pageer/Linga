@@ -1,0 +1,7 @@
+<ul>
+{% for b in books: %}
+	<li>
+		<a href="{{url_for('show_book', book=b.disp_relpath())}}">{{b.name}}</a>
+	</li>
+{% endfor %}
+</ul>

@@ -1,0 +1,26 @@
+{
+  "keyboard_shortcut": "Ctrl+Alt+J", 
+  "name": "Run Jasmine Tests", 
+  "language": "JavaScript", 
+  "trigger_enabled": false, 
+  "value": [
+    "(function() {", 
+    "    var uri = ko.projects.manager.currentProject.importDirectoryURI +", 
+    "              '/tests/javascript/SpecRunner.html',", 
+    "        view = ko.views.manager.getViewForURI(uri);", 
+    "    if (view === null) {", 
+    "        ko.open.URI(uri, 'browser');", 
+    "    } else if (view.reload) {", 
+    "        view.reload();", 
+    "    } else {", 
+    "        view.viewPreview();", 
+    "    }", 
+    "})();"
+  ], 
+  "trigger": "trigger_postopen", 
+  "rank": 100, 
+  "version": "1.0.12", 
+  "async": false, 
+  "type": "macro", 
+  "icon": "chrome://fugue/skin/icons/application-run.png"
+}

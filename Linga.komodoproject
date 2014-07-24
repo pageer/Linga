@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Komodo Project File - DO NOT EDIT -->
+<project id="8597e640-8f55-4bb2-ae31-9cdea1e60484" kpf_version="5" name="Linga.komodoproject">
+<preference-set idref="8597e640-8f55-4bb2-ae31-9cdea1e60484" id="project" preftype="project">
+<preference-set id="testPlans">
+<preference-set id="Linga Tests">
+  <string id="command_line"></string>
+  <string relative="url" id="directory">tests/</string>
+  <string id="language">Python - unittest</string>
+</preference-set>
+</preference-set>
+</preference-set>
+</project>
