@@ -1,9 +1,19 @@
+{% macro nav_menu() %}
+<div class="nav-links">
+	<a href="" class="prev-link">&#8656; Prev</a>
+	<select class="curr-page" data-bind="options: allPageNumbers(),
+	                                     value: pageNumber()">
+	</select> of <span class="total-pages" data-bind="text: pageCount()"></span>
+	<a href="" class="next-link">Next&#8658;</a>
+</div>
+{% endmacro %}
 <!DOCTYPE html>
 <html>
 <head>
 	<title>{{book.name}}</title>
 	<link type="text/css" rel="stylesheet" href="{{url_for('static', filename='css/styles.css')}}">
 	<script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/knockout/3.1.0/knockout-min.js"></script>
 	<script src="{{url_for('static', filename='js/comicview.js')}}"></script>
 </head>
 <body>
@@ -22,9 +32,11 @@
 			</li>
 			{% endfor%}
 		</ul>
+		{{nav_menu()}}
 	</div>
 	<div class="image-content">
 		<img class="main-image" src="{{url_for('show_page', book=book.disp_relpath(), page=1)}}" alt="">
 	</div>
+	{{nav_menu()}}
 </body>
 </html>

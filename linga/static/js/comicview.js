@@ -5,11 +5,19 @@ function ComicPage(url, name, index) {
 }
 
 function ComicViewModel() {
-	this.pages = [];
-	this.current_page = 0;
-	this.page_link_selector = '.page-link';
-	this.main_image_selector = '.main-image';
-	this.image_container_selector = '.image-content';
+	this.pages = ko.observableArray([]);
+	this.pageNumber = ko.observable(1);
+	
+	this.selectors = {
+		page_link: '.page-link',
+		main_image: '.main-image',
+		image_container: '.image-content',
+		next_link: '.next-link',
+		prev_link: '.prev-link',
+		curr_page: '.curr-page',
+		page_cnt: '.total-pages'
+	};
+	
 	this.$links = [];
 	this.$image = [];
 	
@@ -23,22 +31,36 @@ function ComicViewModel() {
 		this.pages.push(page);
 	};
 	
-	this.currentPage = function() {
-		return this.pages[this.current_page];
-	};
+	this.allPageNumbers = ko.computed(function() {
+		var ret = [];
+		for (var i = 0; i < this.pages().length; i++) {
+			ret.push(i + 1);
+		}
+		return ret;
+	}, this);
+	
+	this.pageCount = ko.computed(function() {
+		return this.pages().length;
+	}, this);
+	
+	this.currentPage = ko.computed(function() {
+		return this.pages()[this.pageNumber() - 1];
+	}, this);
 	
 	this.goToPage = function(index) {
-		this.current_page = index - 1;
+		this.pageNumber(index);
 		this.setPageInDom();
 	};
 	
 	this.goToNext = function() {
-		this.current_page++;
+		var curr_page = this.pageNumber();
+		this.pageNumber(curr_page + 1);
 		this.setPageInDom();
 	};
 	
 	this.goToPrev = function() {
-		this.current_page--;
+		var curr_page = this.pageNumber();
+		this.pageNumber(curr_page - 1);
 		this.setPageInDom();
 	};
 	
@@ -52,8 +74,8 @@ function ComicViewModel() {
 	};
 	
 	this.setPageInDom = function() {
-		var $curr_link = this.$links.eq(this.current_page);
-		this.$image.closest(this.image_container_selector).addClass('loading');
+		var $curr_link = this.$links.eq(this.pageNumber() - 1);
+		this.$image.closest(this.selectors.image_container).addClass('loading');
 		this.$image.attr('src', $curr_link.attr('href'));
 		this.$links.removeClass('current-img')
 		$curr_link.addClass('current-img');
@@ -62,22 +84,36 @@ function ComicViewModel() {
 	this.setDomNodes = function() {
 		var self = this,
 		    $base = this.base_node ? $(this.base_node): $(document);
-		this.$links = $base.find(this.page_link_selector),
-		this.$image = $base.find(this.main_image_selector);
+		this.$links = $base.find(this.selectors.page_link);
+		this.$image = $base.find(this.selectors.main_image);
+		$base.find(this.selectors.next_link).off('click').on('click', function() {
+			self.goToNext();
+			return false;
+		});
+		$base.find(this.selectors.prev_link).off('click').on('click', function() {
+			self.goToPrev();
+			return false;
+		});
+		$base.find(this.selectors.curr_page).off('change').on('change', function() {
+			self.goToPage(parseInt($(this).val(), 10));
+		});
 		this.$links.off('click').on('click', function() {
 			var index = parseInt($(this).attr('data-index'), 10);
 			self.goToPage(index);
 			return false;
 		});
 		this.$image.off('load').on('load', function() {
-			$(this).closest(self.image_container_selector).removeClass('loading');
+			$(this).closest(self.selectors.image_container).removeClass('loading');
 		});
 	};
 	
 }
 
+
 $(document).ready(function() {
 	var page = new ComicViewModel();
+	ko.applyBindings(page);
 	page.setDomNodes()
 	page.addPagesFromDom();
+	page.goToPage(1);
 });
