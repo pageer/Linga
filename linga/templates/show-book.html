@@ -1,10 +1,12 @@
 {% macro nav_menu() %}
 <div class="nav-links">
-	<a href="" class="prev-link">&#8656; Prev</a>
-	<select class="curr-page" data-bind="options: allPageNumbers(),
-	                                     value: pageNumber()">
-	</select> of <span class="total-pages" data-bind="text: pageCount()"></span>
-	<a href="" class="next-link">Next&#8658;</a>
+	<div class="nav-control">
+		<a href="" class="prev-link">&#8656; Prev</a>
+		<select class="curr-page" data-bind="options: allPageNumbers(),
+											 value: pageNumber()">
+		</select> of <span class="total-pages" data-bind="text: pageCount()"></span>
+		<a href="" class="next-link">Next&#8658;</a>
+	</div>
 </div>
 {% endmacro %}
 <!DOCTYPE html>
@@ -16,11 +18,18 @@
 	<script src="http://cdnjs.cloudflare.com/ajax/libs/knockout/3.1.0/knockout-min.js"></script>
 	<script src="{{url_for('static', filename='js/comicview.js')}}"></script>
 </head>
-<body>
-	<div class="header">
-		<h3>{{book.name}}</h3>
-		<p>File: {{book.rel_path}}</p>
+<body class="book-page">
+	<noscript>
+		This page won't work with JavaScript disabled.
+	</noscript>
+	<div class="header" data-bind="css: {shown: metadataVisible}">
+		<a href="#" class="menu-link" data-bind="click: toggleMetadata">&#9776;</a>
+		<div class="metadata">
+			<h3 class="title">{{book.name}}</h3>
+			<p>File: {{book.rel_path}}</p>
+		</div>
 	</div>
+	{{nav_menu()}}
 	<div class="pages">
 		<ul class="page-list">
 			{% for file in book.get_file_list() %}
@@ -32,7 +41,6 @@
 			</li>
 			{% endfor%}
 		</ul>
-		{{nav_menu()}}
 	</div>
 	<div class="image-content">
 		<img class="main-image" src="{{url_for('show_page', book=book.disp_relpath(), page=1)}}" alt="">

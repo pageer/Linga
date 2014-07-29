@@ -1,3 +1,47 @@
+html, body.book-page {
+	background-color: #000;
+	margin: 0;
+	padding: 0;
+}
+
+.header {
+	background-color: #727272;
+	color:#f1f1f1;
+	position: fixed;
+	top: 0;
+	left: 0;
+}
+
+.header .menu-link {
+	font-size: 150%;
+	text-decoration: none;
+	color: #f1f1f1;
+}
+
+.header .menu-link:hover {
+	color: #d5d5d5;
+}
+
+.header .metadata {
+	display: none;
+	opacity: 0;
+	visibility: hidden;
+	transition: visibility 0s linear 0.5s, opacity 0.5s linear;
+	padding: 10px;
+}
+
+.header.shown .metadata {
+	display: block;
+	visibility: visible;
+	opacity: 1;
+	transition-delay: 0s;
+}
+
+.header .title {
+	font-size: 130%;
+	margin: 0;
+}
+
 .pages .page-list {
 	display: none;
 	list-style: none;
@@ -6,6 +50,19 @@
 .nav-links {
 	text-align: center;
 	margin: 10px 0;
+}
+
+.nav-links .nav-control {
+	display: inline-block;
+	background-color: #f0f0f0;
+	padding: 10px;
+	border-radius: 5px;
+	opacity: 0.3;
+	transition: opacity 1s;
+}
+
+.nav-links .nav-control:hover {
+	opacity: 0.8;
 }
 
 .pages .page-list li {
@@ -19,5 +76,4 @@
 .image-content {
 	text-align: center;
 	padding: 5px 0;
-	background-color: #000;
 }

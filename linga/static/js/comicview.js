@@ -7,6 +7,7 @@ function ComicPage(url, name, index) {
 function ComicViewModel() {
 	this.pages = ko.observableArray([]);
 	this.pageNumber = ko.observable(1);
+	this.metadataVisible = ko.observable(false);
 	
 	this.selectors = {
 		page_link: '.page-link',
@@ -20,6 +21,11 @@ function ComicViewModel() {
 	
 	this.$links = [];
 	this.$image = [];
+	
+	this.toggleMetadata = function() {
+		var visible = this.metadataVisible();
+		this.metadataVisible(! visible);
+	};
 	
 	this.addPages = function(pages) {
 		for (var i = 0; i < pages.length; i++) {
