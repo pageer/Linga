@@ -22,14 +22,18 @@
 	<noscript>
 		This page won't work with JavaScript disabled.
 	</noscript>
-	<div class="header" data-bind="css: {shown: metadataVisible}">
+	<div class="header">
 		<a href="#" class="menu-link" data-bind="click: toggleMetadata">&#9776;</a>
-		<div class="metadata">
-			<h3 class="title">{{book.name}}</h3>
-			<p>File: {{book.rel_path}}</p>
-		</div>
+		{{nav_menu()}}
 	</div>
-	{{nav_menu()}}
+	<div class="metadata" data-bind="css: {shown: metadataVisible}">
+		<a href="#" class="close-button" data-bind="click: toggleMetadata">&times;</a>
+		<h3 class="book-title">{{book.name}}</h3>
+		<p>File: <span class="book-filepath">{{book.rel_path}}</span></p>
+		<ul class="book-actions">
+			<li><a href="{{url_for('show_book_list')}}">Back to book listing</a></li>
+		</ul>
+	</div>
 	<div class="pages">
 		<ul class="page-list">
 			{% for file in book.get_file_list() %}
@@ -43,8 +47,9 @@
 		</ul>
 	</div>
 	<div class="image-content">
+		<a href="#" class="big-link prev-link"><span class="top">&lsaquo;</span><span class="bottom">&lsaquo;</span></a>
 		<img class="main-image" src="{{url_for('show_page', book=book.disp_relpath(), page=1)}}" alt="">
+		<a href="#" class="big-link next-link"><span class="top">&rsaquo;</span><span class="bottom">&rsaquo;</span></a>
 	</div>
-	{{nav_menu()}}
 </body>
 </html>

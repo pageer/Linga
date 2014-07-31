@@ -5,36 +5,64 @@ html, body.book-page {
 }
 
 .header {
-	background-color: #727272;
-	color:#f1f1f1;
-	position: fixed;
-	top: 0;
-	left: 0;
+	position: relative;
+	min-height: 65px;
 }
 
 .header .menu-link {
-	font-size: 150%;
+	font-size: 2em;
 	text-decoration: none;
 	color: #f1f1f1;
+	border: 1px solid #f1f1f1;
+	margin: 5px;
+	padding: 5px 10px;
+	border-radius: 5px;
+	display: inline-block;
+	float: left;
 }
 
 .header .menu-link:hover {
 	color: #d5d5d5;
 }
 
-.header .metadata {
-	display: none;
+.close-button {
+	color: #f1f1f1;
+	text-decoration: none;
+	font-size: 200%;
+	float: right;
+}
+
+.close-button:hover {
+	color: #d5d5d5;
+}
+
+.metadata {
 	opacity: 0;
 	visibility: hidden;
 	transition: visibility 0s linear 0.5s, opacity 0.5s linear;
 	padding: 10px;
+	color:#f1f1f1;
+	background-color: rgba(114, 114, 114, 0.8);
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	left: 0;
 }
 
-.header.shown .metadata {
-	display: block;
+.metadata.shown {
 	visibility: visible;
+	z-index:10;
 	opacity: 1;
 	transition-delay: 0s;
+}
+
+.metadata .book-actions a {
+	color: #f5f5f5;
+	text-decoration: none;
+}
+
+.metadata .book-actions a:hover {
+	text-decoration: underline;
 }
 
 .header .title {
@@ -55,14 +83,70 @@ html, body.book-page {
 .nav-links .nav-control {
 	display: inline-block;
 	background-color: #f0f0f0;
+	font-size: 120%;
+	font-family: sans-serif;
 	padding: 10px;
 	border-radius: 5px;
-	opacity: 0.3;
+	opacity: 0.2;
 	transition: opacity 1s;
 }
 
 .nav-links .nav-control:hover {
 	opacity: 0.8;
+}
+
+.nav-links .prev-link,
+.nav-links .next-link,
+.nav-links .prev-link:visited,
+.nav-links .next-link:visited {
+	color: #0000aa;
+	text-decoration: none;
+}
+
+.nav-links .prev-link:hover,
+.nav-links .next-link:hover {
+	color: #d61411;
+}
+
+.big-link {
+	display: block;
+	background-color: #f1f1f1;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: 100px;
+	opacity: 0;
+	transition: opacity 0.5s;
+	color: #000;
+	font-size: 500%;
+	text-decoration: none;
+}
+
+.big-link:hover {
+	opacity: 0.2;
+}
+
+.big-link .top,
+.big-link .bottom {
+	display: block;
+	position: absolute;
+	width: 100px;
+	text-align: center;
+}
+
+.big-link .top {
+	top: 15%;
+}
+.big-link .bottom {
+	bottom: 15%;
+}
+
+.big-link.prev-link {
+	left: 0;
+}
+
+.big-link.next-link {
+	right: 0;
 }
 
 .pages .page-list li {
@@ -74,6 +158,7 @@ html, body.book-page {
 }
 
 .image-content {
+	position: relative;
 	text-align: center;
 	padding: 5px 0;
 }

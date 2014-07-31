@@ -42,11 +42,23 @@ describe("A comic book", function() {
 		this.book.base_node = markup;
 		this.book.setDomNodes();
 		
-		this.book.addPagesFromDom(markup);
+		this.book.getDataFromDom(markup);
 		
 		expect(this.book.pages()[0]).toEqual(new ComicPage('#foo', 'Link1', 0));
 		expect(this.book.pages()[1]).toEqual(new ComicPage('#bar', 'Link2', 1));
 		expect(this.book.pages()[2]).toEqual(new ComicPage('#baz', 'Link3', 2));
+	});
+	
+	it("should be able to extract book info from the DOM", function() {
+		var markup = '<div>'+
+			'<span class="book-name">foo</span>' +
+			'</div>';
+		this.book.base_node = markup;
+		this.book.setDomNodes();
+		
+		this.book.getDataFromDom(markup);
+		
+		expect(this.book.name()).toEqual('foo');
 	});
 	
 	it("should be able to set and fetch the current page", function() {

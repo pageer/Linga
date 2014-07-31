@@ -8,9 +8,11 @@ function ComicViewModel() {
 	this.pages = ko.observableArray([]);
 	this.pageNumber = ko.observable(1);
 	this.metadataVisible = ko.observable(false);
+	this.name = ko.observable('');
 	
 	this.selectors = {
 		page_link: '.page-link',
+		book_name: '.book-name',
 		main_image: '.main-image',
 		image_container: '.image-content',
 		next_link: '.next-link',
@@ -55,23 +57,23 @@ function ComicViewModel() {
 	
 	this.goToPage = function(index) {
 		this.pageNumber(index);
+		window.localStorage.setItem('page:' + window.location, index);
 		this.setPageInDom();
 	};
 	
 	this.goToNext = function() {
 		var curr_page = this.pageNumber();
-		this.pageNumber(curr_page + 1);
-		this.setPageInDom();
+		this.goToPage(curr_page + 1);
 	};
 	
 	this.goToPrev = function() {
 		var curr_page = this.pageNumber();
-		this.pageNumber(curr_page - 1);
-		this.setPageInDom();
+		this.goToPage(curr_page - 1);
 	};
 	
-	this.addPagesFromDom = function() {
+	this.getDataFromDom = function() {
 		var self = this;
+		this.name(this.getBaseNode().find(this.selectors.book_name).text());
 		this.$links.each(function() {
 			var $this = $(this),
 			    index = parseInt($this.attr("data-index"), 10);
@@ -85,11 +87,16 @@ function ComicViewModel() {
 		this.$image.attr('src', $curr_link.attr('href'));
 		this.$links.removeClass('current-img')
 		$curr_link.addClass('current-img');
+		$(window).scrollTop(0); //this.$image.offset().top);
+	};
+	
+	this.getBaseNode = function() {
+		return this.base_node ? $(this.base_node): $(document);
 	};
 	
 	this.setDomNodes = function() {
 		var self = this,
-		    $base = this.base_node ? $(this.base_node): $(document);
+		    $base = this.getBaseNode();
 		this.$links = $base.find(this.selectors.page_link);
 		this.$image = $base.find(this.selectors.main_image);
 		$base.find(this.selectors.next_link).off('click').on('click', function() {
@@ -120,6 +127,6 @@ $(document).ready(function() {
 	var page = new ComicViewModel();
 	ko.applyBindings(page);
 	page.setDomNodes()
-	page.addPagesFromDom();
-	page.goToPage(1);
+	page.getDataFromDom();
+	page.goToPage(window.localStorage.getItem('page:'+window.location));
 });

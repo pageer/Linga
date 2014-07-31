@@ -162,6 +162,10 @@ class TestComic(unittest.TestCase):
 		self.assertEquals(c.name, 'test')
 		c = Comic('foo.cbz')
 		self.assertEquals(c.name, 'foo')
+		
+	def test_should_convert_multiple_dashes_and_underscores_in_name_to_one_space(self):
+		c = Comic('foo/test-bizz--foo__fa_bar.cbz')
+		self.assertEquals(c.name, 'test bizz foo fa bar')
 	
 	def test_should_list_only_supported_files(self):
 		c = Comic('test.zip', self.mock_zip)

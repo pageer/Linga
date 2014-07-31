@@ -23,10 +23,10 @@ def show_book_list():
 
 @app.route('/books/read/<string:book>')
 def show_book(book):
-	#try:
+	try:
 		bk = get_book(book)
-		return render_template('show-book.html', book=bk)
-	#except:
+		return render_template('show-book.html', book=bk, book_id=book)
+	except:
 		abort(404)
 
 @app.route('/books/page/<string:book>/<int:page>')

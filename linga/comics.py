@@ -1,3 +1,4 @@
+import re
 import os
 import os.path
 import zipfile
@@ -55,7 +56,7 @@ class InvalidPageError(IndexError):
 
 class Comic:
 	def __init__(self, path, archive = None):
-		self.name = os.path.splitext(os.path.basename(path))[0]
+		self.name = re.sub(r"[-_]+", ' ', os.path.splitext(os.path.basename(path))[0])
 		self.path = path
 		self.rel_path = path
 		self.current_file_index = -1
