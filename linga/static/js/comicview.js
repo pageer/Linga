@@ -57,7 +57,7 @@ function ComicViewModel() {
 	
 	this.goToPage = function(index) {
 		this.pageNumber(index);
-		window.localStorage.setItem('page:' + window.location, index);
+		localStorage.setItem('page:' + this.name(), index);
 		this.setPageInDom();
 	};
 	
@@ -110,6 +110,9 @@ function ComicViewModel() {
 		$base.find(this.selectors.curr_page).off('change').on('change', function() {
 			self.goToPage(parseInt($(this).val(), 10));
 		});
+		$base.off('click').on('click', function() {
+			$base.find('.show-hover').removeClass('show-hover');
+		});
 		this.$links.off('click').on('click', function() {
 			var index = parseInt($(this).attr('data-index'), 10);
 			self.goToPage(index);
@@ -117,6 +120,10 @@ function ComicViewModel() {
 		});
 		this.$image.off('load').on('load', function() {
 			$(this).closest(self.selectors.image_container).removeClass('loading');
+		});
+		this.$image.off('click').on('click', function() {
+			$(this).closest('.image-content').toggleClass('show-hover');
+			return false;
 		});
 	};
 	
@@ -128,5 +135,5 @@ $(document).ready(function() {
 	ko.applyBindings(page);
 	page.setDomNodes()
 	page.getDataFromDom();
-	page.goToPage(window.localStorage.getItem('page:'+window.location));
+	page.goToPage(localStorage.getItem('page:'+page.name()));
 });

@@ -122,6 +122,7 @@ html, body.book-page {
 	text-decoration: none;
 }
 
+.show-hover .big-link,
 .big-link:hover {
 	opacity: 0.2;
 }
