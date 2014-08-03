@@ -6,6 +6,7 @@ BOOK_PATH = os.path.normpath(os.path.join(os.path.dirname(__file__), '..', 'book
 
 app = Flask(__name__)
 app.config.from_object(__name__)
+app.config.from_pyfile('../config.py', silent=True)
 
 db = SQLAlchemy(app)
 
