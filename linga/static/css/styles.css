@@ -1,4 +1,4 @@
-html, body.book-page {
+body.book-page {
 	background-color: #000;
 	margin: 0;
 	padding: 0;
@@ -162,4 +162,26 @@ html, body.book-page {
 	position: relative;
 	text-align: center;
 	padding: 5px 0;
+	width: 100%;
+}
+
+.image-content .loading-overlay {
+	display: none;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: 100%;
+	background-color: rgba(82, 82, 82, 0.5);
+	background-image: url(../img/ajax-loader.gif);
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+	background-position: center;
+}
+
+.image-content.loading .loading-overlay {
+	display: block;
+}
+
+.image-content .main-image {
+	max-width: 100%;
 }

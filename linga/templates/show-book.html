@@ -13,6 +13,7 @@
 <html>
 <head>
 	<title>{{book.name}}</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link type="text/css" rel="stylesheet" href="{{url_for('static', filename='css/styles.css')}}">
 	<script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
 	<script src="http://cdnjs.cloudflare.com/ajax/libs/knockout/3.1.0/knockout-min.js"></script>
@@ -31,6 +32,7 @@
 		<h3 class="book-title">{{book.name}}</h3>
 		<p>File: <span class="book-filepath">{{book.rel_path}}</span></p>
 		<ul class="book-actions">
+			<li><a href="{{url_for('download_book', book=book.rel_path)}}">Download book archive</a></li>
 			<li><a href="{{url_for('show_book_list')}}">Back to book listing</a></li>
 		</ul>
 	</div>
@@ -47,6 +49,7 @@
 		</ul>
 	</div>
 	<div class="image-content">
+		<div class="loading-overlay"></div>
 		<a href="#" class="big-link prev-link"><span class="top">&lsaquo;</span><span class="bottom">&lsaquo;</span></a>
 		<img class="main-image" src="{{url_for('show_page', book=book.disp_relpath(), page=1)}}" alt="">
 		<a href="#" class="big-link next-link"><span class="top">&rsaquo;</span><span class="bottom">&rsaquo;</span></a>

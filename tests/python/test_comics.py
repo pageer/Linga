@@ -227,6 +227,22 @@ class TestComic(unittest.TestCase):
 		self.assertEquals(c.get_file_mime(2), 'image/jpeg')
 		self.assertEquals(c.get_file_mime(3), 'image/jpeg')
 	
+	def test_should_get_zip_mimetype_for_zip(self):
+		c = Comic('test.zip')
+		self.assertEquals(c.mimetype(), 'application/zip')
+	
+	def test_should_get_zip_mimetype_for_cbz(self):
+		c = Comic('test.cbz')
+		self.assertEquals(c.mimetype(), 'application/zip')
+	
+	def test_should_get_rar_mimetype_for_rar(self):
+		c = Comic('test.rar')
+		self.assertEquals(c.mimetype(), 'application/rar')
+	
+	def test_should_get_rar_mimetype_for_cbr(self):
+		c = Comic('test.cbr')
+		self.assertEquals(c.mimetype(), 'application/rar')
+	
 	
 if __name__ == '__main__':
     unittest.main()

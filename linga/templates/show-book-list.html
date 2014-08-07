@@ -1,3 +1,11 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link type="text/css" rel="stylesheet" href="{{url_for('static', filename='css/styles.css')}}">
+	<script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/knockout/3.1.0/knockout-min.js"></script>
+</head>
+<body>
 <ul>
 {% for b in books: %}
 	<li>
@@ -5,3 +13,5 @@
 	</li>
 {% endfor %}
 </ul>
+</body>
+</html>

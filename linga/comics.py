@@ -2,10 +2,11 @@ import re
 import os
 import os.path
 import zipfile
+import rarfile
 
 from app import (get_app, get_config, get_db)
 
-COMIC_ARCHIVE_EXTENSIONS = ['.cbz']
+COMIC_ARCHIVE_EXTENSIONS = ['.cbz', '.zip', '.cbr', '.rar']
 COMIC_IMAGE_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif']
 COMIC_IMAGE_MIME_MAP = {
 	'image/jpeg': ['.jpg', '.jpeg'],
@@ -47,6 +48,15 @@ def is_supported_image(file_name):
 	name, ext = os.path.splitext(file_name)
 	return ext.lower() in COMIC_IMAGE_EXTENSIONS
 
+def get_mime_type(file_name):
+	name, ext = os.path.splitext(file_name)
+	if ext in ['.zip', '.cbz']:
+		return 'application/zip'
+	elif ext in ['.rar', '.cbr']:
+		return 'application/rar'
+	else:
+		return 'application/octet-stream'
+
 
 class InvalidPageError(IndexError):
 	def __init__(self, page=0):
@@ -72,9 +82,15 @@ class Comic:
 	def disp_relpath(self):
 		return remove_sep(self.rel_path)
 	
+	def mimetype(self):
+		return get_mime_type(self.path)
+	
 	def get_archive(self):
 		if not self.archive:
-			self.archive = zipfile.ZipFile(self.path, 'r')
+			if self.mimetype() == 'application/rar':
+				self.archive = rarfile.RarFile(self.path, 'r')
+			else:
+				self.archive = zipfile.ZipFile(self.path, 'r')
 		return self.archive
 		
 	def get_file_list(self):

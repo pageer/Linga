@@ -1,6 +1,7 @@
+import os.path
+import StringIO
 from flask import (render_template, make_response, redirect, abort, url_for,
 				   send_file, flash, request, session, g)
-import StringIO
 
 from linga import app
 from linga.comics import (ComicLister, Comic, relpath_to_book, add_sep)
@@ -14,7 +15,7 @@ def get_book(path):
 def show_index():
 	return render_template('index.html')
 
-@app.route('/books')
+@app.route('/books/')
 def show_book_list():
 	lister = ComicLister(app.config['BOOK_PATH'])
 	book_list = lister.get_books()
@@ -38,5 +39,14 @@ def show_page(book, page):
 		sio.write(img_file)
 		sio.seek(0)
 		return send_file(sio, 'image/jpg')
+	except:
+		abort(404)
+
+@app.route('/books/download/<string:book>')
+def download_book(book):
+	try:
+		bk = get_book(book)
+		return send_file(os.path.abspath(bk.path), mimetype=bk.mimetype(), as_attachment=True,
+		                 attachment_filename=bk.rel_path)
 	except:
 		abort(404)

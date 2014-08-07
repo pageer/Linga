@@ -87,7 +87,6 @@ function ComicViewModel() {
 		this.$image.attr('src', $curr_link.attr('href'));
 		this.$links.removeClass('current-img')
 		$curr_link.addClass('current-img');
-		$(window).scrollTop(0); //this.$image.offset().top);
 	};
 	
 	this.getBaseNode = function() {
@@ -120,6 +119,7 @@ function ComicViewModel() {
 		});
 		this.$image.off('load').on('load', function() {
 			$(this).closest(self.selectors.image_container).removeClass('loading');
+			$(window).scrollTop(0);
 		});
 		this.$image.off('click').on('click', function() {
 			$(this).closest('.image-content').toggleClass('show-hover');
