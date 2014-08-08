@@ -125,6 +125,9 @@ function ComicViewModel() {
 			$(this).closest('.image-content').toggleClass('show-hover');
 			return false;
 		});
+		this.$image.off('dragstart').on('dragstart', function(e) {
+			e.preventDefault();
+		});
 	};
 	
 }
