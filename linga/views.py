@@ -11,10 +11,10 @@ def get_book(path):
 	ret.set_rel_path(app.config['BOOK_PATH'])
 	return ret
 
-@app.route('/')
 def show_index():
 	return render_template('index.html')
 
+@app.route('/')
 @app.route('/books/')
 def show_book_list():
 	lister = ComicLister(app.config['BOOK_PATH'])
