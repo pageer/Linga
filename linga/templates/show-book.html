@@ -29,7 +29,7 @@
 	</div>
 	<div class="metadata" data-bind="css: {shown: metadataVisible}">
 		<a href="#" class="close-button" data-bind="click: toggleMetadata">&times;</a>
-		<h3 class="book-title">{{book.name}}</h3>
+		<h3 class="book-name">{{book.name}}</h3>
 		<p>File: <span class="book-filepath">{{book.rel_path}}</span></p>
 		<ul class="book-actions">
 			<li><a href="{{url_for('download_book', book=book.rel_path)}}">Download book archive</a></li>

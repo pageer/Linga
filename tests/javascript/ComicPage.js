@@ -108,4 +108,35 @@ describe("A comic book", function() {
 		expect(this.book.allPageNumbers().length).toEqual(3);
 	});
 	
+	it("should ignore navigation to before first page", function() {
+		this.book.addPages(this.test_pages);
+		
+		expect(this.book.pageNumber()).toEqual(1);
+		
+		this.book.goToPrev();
+		
+		expect(this.book.pageNumber()).toEqual(1);
+		
+		this.book.goToPage(2)
+		this.book.goToPage(0);
+		
+		expect(this.book.pageNumber()).toEqual(2);
+	});
+	
+	it("should ignore navigation to after last page", function() {
+		this.book.addPages(this.test_pages);
+		this.book.goToPage(3);
+		
+		expect(this.book.pageNumber()).toEqual(3);
+		
+		this.book.goToNext();
+		
+		expect(this.book.pageNumber()).toEqual(3);
+		
+		this.book.goToPage(2);
+		this.book.goToPage(4);
+		
+		expect(this.book.pageNumber()).toEqual(2);
+	});
+	
 });

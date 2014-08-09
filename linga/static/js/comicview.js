@@ -6,6 +6,7 @@ function ComicPage(url, name, index) {
 
 function ComicViewModel() {
 	this.pages = ko.observableArray([]);
+	// Current page number, starting from 1
 	this.pageNumber = ko.observable(1);
 	this.metadataVisible = ko.observable(false);
 	this.name = ko.observable('');
@@ -56,9 +57,11 @@ function ComicViewModel() {
 	}, this);
 	
 	this.goToPage = function(index) {
-		this.pageNumber(index);
-		localStorage.setItem('page:' + this.name(), index);
-		this.setPageInDom();
+		if (0 < index && index <= this.pageCount()) {
+			this.pageNumber(index);
+			localStorage.setItem('page:' + this.name(), index);
+			this.setPageInDom();
+		}
 	};
 	
 	this.goToNext = function() {
@@ -135,6 +138,7 @@ function ComicViewModel() {
 
 $(document).ready(function() {
 	var page = new ComicViewModel();
+	window.p=page;
 	ko.applyBindings(page);
 	page.setDomNodes()
 	page.getDataFromDom();
