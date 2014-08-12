@@ -185,3 +185,8 @@ body.book-page {
 .image-content .main-image {
 	max-width: 100%;
 }
+
+/* Book listing page */
+.book-listing .closed ul {
+	display: none;
+}

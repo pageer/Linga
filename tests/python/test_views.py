@@ -26,8 +26,8 @@ class LingaTestCase(unittest.TestCase):
 		res = self.app.get('/books/')
 		self.assertIn('test.cbz', res.data)
 	
-	def test_should_get_expected_data_for_book_page(self):
-		res = self.app.get('/')
+	#def test_should_get_expected_data_for_book_page(self):
+	#	res = self.app.get('/')
 
 if __name__ == '__main__':
 	unittest.main()

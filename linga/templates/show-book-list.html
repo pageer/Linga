@@ -1,17 +1,35 @@
+{% macro show_books(bookdir) %}
+<ul>
+	{% for d in bookdir.children %}
+		<li class="item-dir closed">
+			<a class="dir-name" href="#">{{bookdir.children[d].name}}</a>
+			{{show_books(bookdir.children[d])}}
+		</li>
+	{% endfor %}
+	{% for b in bookdir.books %}
+		<li class="item-book">
+			<a href="{{url_for('show_book', book=b.disp_relpath())}}">{{b.name}}</a>
+		</li>
+	{% endfor %}
+</ul>
+{% endmacro %}
 <!DOCTYPE html>
 <html>
 <head>
 	<link type="text/css" rel="stylesheet" href="{{url_for('static', filename='css/styles.css')}}">
 	<script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
 	<script src="http://cdnjs.cloudflare.com/ajax/libs/knockout/3.1.0/knockout-min.js"></script>
+	<script>
+		$(document).ready(function() {
+			$('.book-listing .item-dir .dir-name').on('click', function(e) {
+				$(this).parent().toggleClass('closed');
+			});
+		});
+	</script>
 </head>
 <body>
-<ul>
-{% for b in books: %}
-	<li>
-		<a href="{{url_for('show_book', book=b.disp_relpath())}}">{{b.name}}</a>
-	</li>
-{% endfor %}
-</ul>
+	<div class="book-listing">
+		{{show_books(books)}}
+	</div>
 </body>
 </html>

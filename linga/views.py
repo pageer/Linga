@@ -19,8 +19,9 @@ def show_index():
 def show_book_list():
 	lister = ComicLister(app.config['BOOK_PATH'])
 	book_list = lister.get_books()
+	books = lister.group_by_path(book_list)
 	return render_template('show-book-list.html',
-						   books = book_list)
+						   books = books)
 
 @app.route('/books/read/<string:book>')
 def show_book(book):

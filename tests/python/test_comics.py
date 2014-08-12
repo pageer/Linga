@@ -13,9 +13,9 @@ except:
 
 sys.path.insert(0, dirname(dirname(dirname(os.path.abspath(__file__)))))
 
-from linga.comics import (ComicLister, Comic, InvalidPageError, is_supported_format,
-						  is_supported_image, path_to_book, relpath_to_book,
-						  remove_sep, add_sep)
+from linga.comics import (ComicLister, Comic, ComicDir, InvalidPageError,
+						  is_supported_format, is_supported_image, path_to_book,
+						  relpath_to_book, remove_sep, add_sep)
 
 class TestComicLister(unittest.TestCase):
 	def setUp(self):
@@ -75,8 +75,60 @@ class TestComicLister(unittest.TestCase):
 		for i in range(0, 3):
 			self.assertIsInstance(book_list[i], Comic)
 			self.assertEqual(book_list[i].rel_path, rel_paths[i])
-			
-			
+		
+	def test_should_group_files_in_top_level(self):
+		books = [
+			Comic(os.path.join('x', 'bar.cbz')),
+			Comic(os.path.join('x', 'foo.cbz')),
+		]
+		
+		for item in books:
+			item.set_rel_path('x')
+		
+		ret = self.lister.group_by_path(books)
+
+		self.assertIsInstance(ret, ComicDir)
+		self.assertIn(books[0], ret.books)
+		self.assertIn(books[1], ret.books)
+	
+	def test_should_group_subdir_files_in_dirs(self):
+		books = [
+			Comic(os.path.join('x', 'buzz', 'bar.cbz')),
+			Comic(os.path.join('x', 'baz', 'foo.cbz')),
+		]
+		
+		for item in books:
+			item.set_rel_path('x')
+		
+		ret = self.lister.group_by_path(books)
+
+		self.assertIsInstance(ret, ComicDir)
+		self.assertIn(books[0], ret.child('buzz').books)
+		self.assertIn(books[1], ret.child('baz').books)
+	
+	def test_should_group_books_by_folder(self):
+		
+		books = [
+			Comic(os.path.join('x', 'bar.cbz')),
+			Comic(os.path.join('x', 'foo', 'baz.cbz')),
+			Comic(os.path.join('x', 'foo', 'bar', 'bizz.cbz')),
+			Comic(os.path.join('x', 'foo.cbz')),
+			Comic(os.path.join('x', 'bar', 'buzz.cbz')),
+		]
+		
+		for item in books:
+			item.set_rel_path('x')
+		
+		ret = self.lister.group_by_path(books)
+		
+		self.assertIsInstance(ret, ComicDir)
+		self.assertIn(books[0], ret.books)
+		self.assertIn(books[3], ret.books)
+		self.assertIn(books[1], ret.child('foo').books)
+		self.assertIn(books[4], ret.child('bar').books)
+		self.assertIn(books[2], ret.traverse_children(['foo', 'bar']).books)
+
+		
 class TestComicIsSupportedFile(unittest.TestCase):
 	@mock.patch('linga.comics.os.path.isfile')
 	def test_should_accept_case_insensitive_cbz(self, mock_isfile):
@@ -242,6 +294,42 @@ class TestComic(unittest.TestCase):
 	def test_should_get_rar_mimetype_for_cbr(self):
 		c = Comic('test.cbr')
 		self.assertEquals(c.mimetype(), 'application/rar')
+	
+	
+class TestComicDir(unittest.TestCase):
+	
+	def setUp(self):
+		self.dir = ComicDir()
+		
+	def test_should_have_no_name_by_default(self):
+		self.assertEqual(self.dir.name, '')
+	
+	def test_should_set_name_in_constructor(self):
+		self.assertEqual(ComicDir('fizz').name, 'fizz')
+	
+	def test_should_access_existing_child(self):
+		foo = ComicDir('foo')
+		self.dir.children['foo'] = foo
+		self.assertIs(self.dir.child('foo'), foo)
+	
+	def test_should_create_missing_child(self):
+		self.assertEqual(self.dir.child('bar').name, 'bar')
+	
+	def test_should_return_new_child_after_create(self):
+		new = self.dir.child('buzz')
+		new.books.append('test')
+		self.assertIs(self.dir.child('buzz'), new)
+		self.assertIn('test', self.dir.child('buzz').books)
+	
+	def test_should_traverse_existing_children(self):
+		foo = ComicDir('foo')
+		bar = ComicDir('bar')
+		self.dir.children['foo'] = foo
+		foo.children['bar'] = bar
+		self.assertIs(self.dir.traverse_children(['foo', 'bar']), bar)
+		
+	def test_should_create_new_dirs_when_traversing(self):
+		self.assertEqual(self.dir.traverse_children(['buzz', 'bazz']).name, 'bazz')
 	
 	
 if __name__ == '__main__':

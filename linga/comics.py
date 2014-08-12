@@ -155,3 +155,38 @@ class ComicLister:
 			c.set_rel_path(path)
 			ret.append(c)
 		return ret
+	
+	def group_by_path(self, books):
+		ret = ComicDir()
+		for book in books:
+			paths = book.rel_path.split(os.path.sep)
+			target = ret
+			pathlen = len(paths)
+			if pathlen > 1:
+				target = ret.traverse_children(paths[:pathlen-1])
+			target.books.append(book)
+		return ret
+
+
+class ComicDir:
+	def __init__(self, name=''):
+		self.name = name
+		self.books = []
+		self.children = {}
+	
+	def child(self, name):
+		try:
+			return self.children[name]
+		except KeyError:
+			self.children[name] = ComicDir(name)
+			return self.children[name]
+	
+	def traverse_children(self, path_list):
+		"""Recursively traverse multiple children represented by the path list"""
+		curr_item = self
+		for path in path_list:
+			curr_item = curr_item.child(path)
+		return curr_item
+	
+
+	
