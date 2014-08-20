@@ -1,3 +1,4 @@
+{% extends "layout.html" %}
 {% macro show_books(bookdir) %}
 <ul>
 	{% for d in bookdir.children %}
@@ -13,12 +14,10 @@
 	{% endfor %}
 </ul>
 {% endmacro %}
-<!DOCTYPE html>
-<html>
-<head>
-	<link type="text/css" rel="stylesheet" href="{{url_for('static', filename='css/styles.css')}}">
-	<script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
-	<script src="http://cdnjs.cloudflare.com/ajax/libs/knockout/3.1.0/knockout-min.js"></script>
+{%block pagetitle %}
+Available Comic Books
+{% endblock %}
+{% block headscripts %}
 	<script>
 		$(document).ready(function() {
 			$('.book-listing .item-dir .dir-name').on('click', function(e) {
@@ -26,10 +25,9 @@
 			});
 		});
 	</script>
-</head>
-<body>
+{% endblock %}
+{% block bodycontent %}
 	<div class="book-listing">
 		{{show_books(books)}}
 	</div>
-</body>
-</html>
+{% endblock %}

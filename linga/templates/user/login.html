@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% block pagetitle %}
+User Login
+{% endblock %}
+{% block bodycontent %}
+	<form method="post" action="{{url_for('user_login')}}">
+		<label>
+			<span>E-mail:</span>
+			<input type="text" name="email"/>
+		</label>
+		<label>
+			<span>Password:</span>
+			<input type="password" name="password"/>
+		</label>
+		<input type="submit" value="Login"/>
+	</form>
+{% endblock %}

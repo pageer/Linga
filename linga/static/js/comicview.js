@@ -10,10 +10,13 @@ function ComicViewModel() {
 	this.pageNumber = ko.observable(1);
 	this.metadataVisible = ko.observable(false);
 	this.name = ko.observable('');
+	this.relpath = '';
 	
 	this.selectors = {
 		page_link: '.page-link',
 		book_name: '.book-name',
+		book_path: '.book-filepath',
+		book_page: '.book-last-page',
 		main_image: '.main-image',
 		image_container: '.image-content',
 		next_link: '.next-link',
@@ -61,6 +64,7 @@ function ComicViewModel() {
 			this.pageNumber(index);
 			localStorage.setItem('page:' + this.name(), index);
 			this.setPageInDom();
+			this.updatePage();
 		}
 	};
 	
@@ -74,9 +78,18 @@ function ComicViewModel() {
 		this.goToPage(curr_page - 1);
 	};
 	
+	this.updatePage = function() {
+		$.post(
+			SCRIPT_ROOT + '/book/update/page',
+			{relpath: this.relpath, page: this.pageNumber},
+			function(){}
+		);
+	};
+	
 	this.getDataFromDom = function() {
 		var self = this;
 		this.name(this.getBaseNode().find(this.selectors.book_name).text());
+		this.relpath = this.getBaseNode().find(this.selectors.book_path).text();
 		this.$links.each(function() {
 			var $this = $(this),
 			    index = parseInt($this.attr("data-index"), 10);
@@ -142,5 +155,6 @@ $(document).ready(function() {
 	ko.applyBindings(page);
 	page.setDomNodes()
 	page.getDataFromDom();
-	page.goToPage(localStorage.getItem('page:'+page.name()));
+	var last_page = parseInt(page.getBaseNode().find(page.selectors.book_page).text(), 10);
+	page.goToPage(last_page);
 });

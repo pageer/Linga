@@ -3,8 +3,9 @@ import os
 import os.path
 import zipfile
 import rarfile
+from datetime import datetime
 
-from app import (get_app, get_config, get_db)
+from app import (get_app, get_config, get_db, db)
 
 COMIC_ARCHIVE_EXTENSIONS = ['.cbz', '.zip', '.cbr', '.rar']
 COMIC_IMAGE_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif']
@@ -56,6 +57,9 @@ def get_mime_type(file_name):
 		return 'application/rar'
 	else:
 		return 'application/octet-stream'
+	
+def comic_query():
+	return db.session.query(ComicMetadata)
 
 
 class InvalidPageError(IndexError):
@@ -72,7 +76,20 @@ class Comic:
 		self.current_file_index = -1
 		self.archive = archive
 		self.file_list = []
-		
+		self._metadata = None
+	
+	def metadata(self, userid):
+		if self._metadata is None:
+			try:
+				dat = comic_query().filter_by(user_id=userid, book_relpath=self.rel_path).first()
+			except:
+				dat = ComicMetadata(userid, self.rel_path)
+			if dat:
+				self._metadata = dat
+			else:
+				self._metadata = ComicMetadata(userid, self.rel_path)
+		return self._metadata
+	
 	def set_rel_path(self, base):
 		# Make sure there's a trailing slash.
 		base = os.path.join(base, '')
@@ -189,4 +206,17 @@ class ComicDir:
 		return curr_item
 	
 
+class ComicMetadata(db.Model):
+	__tablename__ = 'linga_book_metadata'
+	
+	user_id = db.Column(db.Integer, db.ForeignKey('linga_users.user_id'), nullable=False, primary_key=True)
+	book_relpath = db.Column(db.String(256), nullable=False, primary_key=True)
+	last_page = db.Column(db.Integer)
+	last_access = db.Column(db.DateTime, nullable=False)
+	
+	def __init__(self, userid=None, bookpath=None):
+		self.user_id = userid
+		self.book_relpath = bookpath
+		self.last_page = 1
+		self.last_access = datetime.now()
 	

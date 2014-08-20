@@ -13,9 +13,10 @@ except:
 
 sys.path.insert(0, dirname(dirname(dirname(os.path.abspath(__file__)))))
 
-from linga.comics import (ComicLister, Comic, ComicDir, InvalidPageError,
+from linga import app, db, User
+from linga.comics import (ComicLister, Comic, ComicDir, ComicMetadata, InvalidPageError,
 						  is_supported_format, is_supported_image, path_to_book,
-						  relpath_to_book, remove_sep, add_sep)
+						  relpath_to_book, remove_sep, add_sep, comic_query)
 
 class TestComicLister(unittest.TestCase):
 	def setUp(self):
@@ -330,6 +331,66 @@ class TestComicDir(unittest.TestCase):
 		
 	def test_should_create_new_dirs_when_traversing(self):
 		self.assertEqual(self.dir.traverse_children(['buzz', 'bazz']).name, 'bazz')
+	
+	
+class TestComicMetadata(unittest.TestCase):
+	def setUp(self):
+		app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tmp.db'
+		db.init_app(app)
+		db.create_all()
+		self.usr = User('foo', 'bar')
+		db.session.add(self.usr)
+		db.session.commit()
+	
+	def tearDown(self):
+		db.drop_all()
+	
+	def test_should_set_userid_on_create(self):
+		cb = ComicMetadata(self.usr.user_id)
+		self.assertEquals(cb.user_id, self.usr.user_id)
+	
+	def test_should_set_relpath_on_create(self):
+		cb = ComicMetadata(self.usr.user_id, 'foo/bar/baz.cbz')
+		self.assertEquals(cb.book_relpath, 'foo/bar/baz.cbz')
+	
+	def test_should_persist_new_record(self):
+		cb = ComicMetadata(self.usr.user_id, 'foo/bar/baz.cbz')
+		db.session.add(cb)
+		db.session.commit()
+		new_books = comic_query().filter_by(user_id=self.usr.user_id, book_relpath='foo/bar/baz.cbz').all()
+		self.assertEquals(len(new_books), 1)
+		self.assertEquals(new_books[0].user_id, self.usr.user_id)
+		self.assertEquals(new_books[0].book_relpath, 'foo/bar/baz.cbz')
+	
+	def test_should_persist_new_changes(self):
+		cb = ComicMetadata(self.usr.user_id, 'foo/bar/baz.cbz')
+		db.session.add(cb)
+		db.session.commit()
+		cb.last_page = 37
+		db.session.add(cb)
+		db.session.commit()
+		new_books = comic_query().filter_by(user_id=self.usr.user_id, book_relpath='foo/bar/baz.cbz').all()
+		self.assertEquals(len(new_books), 1)
+		self.assertEquals(new_books[0].last_page, 37)
+	
+	def test_should_allow_one_record_per_user_per_book(self):
+		cb1 = ComicMetadata(self.usr.user_id, 'foo/bar/baz.cbz')
+		db.session.add(cb1)
+		db.session.commit()
+		cb2 = ComicMetadata(self.usr.user_id, 'foo/bar/baz.cbz')
+		db.session.add(cb2)
+		try:
+			db.session.commit()
+			self.assertTrue(False)
+		except:
+			db.session.rollback()
+			self.assertTrue(True)
+	
+	def test_should_create_new_on_metadata_call(self):
+		c = Comic('foo/bar.cbz')
+		m = c.metadata(1)
+		self.assertEquals(m.user_id, 1)
+		self.assertEquals(m.book_relpath, 'foo/bar.cbz')
 	
 	
 if __name__ == '__main__':

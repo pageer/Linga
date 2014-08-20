@@ -52,6 +52,7 @@ describe("A comic book", function() {
 	it("should be able to extract book info from the DOM", function() {
 		var markup = '<div>'+
 			'<span class="book-name">foo</span>' +
+			'<span class="book-filepath">fizz/buzz</span>'
 			'</div>';
 		this.book.base_node = markup;
 		this.book.setDomNodes();
@@ -59,6 +60,7 @@ describe("A comic book", function() {
 		this.book.getDataFromDom(markup);
 		
 		expect(this.book.name()).toEqual('foo');
+		expect(this.book.relpath).toEqual('fizz/buzz');
 	});
 	
 	it("should be able to set and fetch the current page", function() {
