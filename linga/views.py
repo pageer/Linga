@@ -72,7 +72,7 @@ def user_login():
 			if usr is not None:
 				valid = usr.check_password(passwd)
 			if valid:
-				valid = login_user(usr, True)
+				valid = login_user(usr)
 			if valid:
 				usr.last_login = datetime.now()
 				db.session.add(usr)

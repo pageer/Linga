@@ -38,7 +38,7 @@ class User(db.Model, UserMixin):
 		return unicode(self.user_id)
 	
 	def get_auth_token(self):
-		tok = "%s|%s" % (self.user_id, make_secure_token(self.user_id, self.password))
+		tok = "%s|%s" % (self.user_id, make_secure_token(str(self.user_id), self.password))
 		return unicode(tok)
 	
 	def check_password(self, password):
