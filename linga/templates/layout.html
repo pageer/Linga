@@ -1,3 +1,22 @@
+{% macro user_menu(links) %}
+<div class="app-menu dropdown">
+  <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">
+    Actions
+    <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="dropdownMenu1">
+	{% if links %}
+	{% for link in links %}
+    <li role="presentation"><a role="menuitem" tabindex="-1" href="{{link.url}}">{{link.name}}</a></li>
+	{% endfor %}
+    <li role="presentation" class="divider"></li>
+	{% endif %}
+    <li role="presentation">
+		<a role="menuitem" tabindex="-1" href="{{url_for('user_logout')}}">Logout</a>
+	</li>
+  </ul>
+</div>
+{% endmacro %}
 <!DOCTYPE html>
 <html>
 <head>

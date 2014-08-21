@@ -27,6 +27,8 @@ Available Comic Books
 	</script>
 {% endblock %}
 {% block bodycontent %}
+	{{user_menu()}}
+	<h2>Available Books</h2>
 	<div class="book-listing">
 		{{show_books(books)}}
 	</div>

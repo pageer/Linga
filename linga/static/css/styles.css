@@ -186,7 +186,22 @@ body.book-page {
 	max-width: 100%;
 }
 
+/* General app styles */
+.app-menu {
+	float: right;
+	margin-right: 10px;
+}
+
 /* Book listing page */
 .book-listing .closed ul {
 	display: none;
+}
+
+/* Login/user create pages */
+.login-form {
+	width: 50%;
+	min-width: 200px;
+	max-width: 400px;
+	margin: 0 auto;
+	margin-top: 10px;
 }
