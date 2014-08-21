@@ -75,9 +75,12 @@ def user_login():
 				valid = login_user(usr)
 			if valid:
 				usr.last_login = datetime.now()
-				db.session.add(usr)
-				db.session.commit()
-				return redirect(request.args.get('next') or url_for('show_book_list'))
+				try:
+					db.session.add(usr)
+					db.session.commit()
+					return redirect(request.args.get('next') or url_for('show_book_list'))
+				except Exception as ex:
+					flash(ex)
 			else:
 				flash('Invalid username or password')
 		else:

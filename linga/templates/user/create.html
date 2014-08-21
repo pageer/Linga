@@ -3,13 +3,6 @@
 Create New User
 {% endblock %}
 {% block bodycontent %}
-	{% with message = get_flashed_messages() %}
-		{% if messages %}
-			{% for msg in messages %}
-			<div class="alert">{{msg}}</div>
-			{% endfor %}
-		{% endif %}
-	{% endwith %}
 	<form method="post" action="{{url_for('user_create')}}">
 		<label>
 			<span>E-mail:</span>

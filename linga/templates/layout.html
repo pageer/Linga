@@ -14,6 +14,13 @@
 	{% block headscripts %}{% endblock %}
 </head>
 <body {% block bodyattrs %}{% endblock %}>
-{% block bodycontent %}{% endblock %}
+	{% with message = get_flashed_messages() %}
+		{% if messages %}
+			{% for msg in messages %}
+			<div class="alert">{{msg}}</div>
+			{% endfor %}
+		{% endif %}
+	{% endwith %}
+	{% block bodycontent %}{% endblock %}
 </body>
 </html>
