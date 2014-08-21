@@ -14,7 +14,7 @@
 	{% block headscripts %}{% endblock %}
 </head>
 <body {% block bodyattrs %}{% endblock %}>
-	{% with message = get_flashed_messages() %}
+	{% with messages = get_flashed_messages() %}
 		{% if messages %}
 			{% for msg in messages %}
 			<div class="alert">{{msg}}</div>
