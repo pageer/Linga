@@ -103,9 +103,12 @@ def user_create():
 		confirm_passwd = request.form.get('confirm_password')
 		if len(username) > 3 and len(passwd) > 3 and passwd == confirm_passwd:
 			usr = User(username, passwd)
-			db.session.add(usr)
-			db.session.commit()
-			flash("Created user")
+			try:
+				db.session.add(usr)
+				db.session.commit()
+				flash("Created user")
+			except Exception as ex:
+				flash(ex)
 	return render_template('user/create.html', email=username)
 
 @app.route('/book/update/page', methods=['POST'])
@@ -120,7 +123,10 @@ def update_page():
 			data = ComicMetadata(uid, path)
 		data.last_access = datetime.now()
 		data.last_page = page
-		db.session.add(data)
-		db.session.commit()
-		return jsonify({'status': True})
-	return jsonify({'status': False})
+		try:
+			db.session.add(data)
+			db.session.commit()
+			return jsonify({'status': True})
+		except Exception as err:
+			return jsonify({'status': False, 'error': err})
+	return jsonify({'status': False, 'error': 'Missing data'})

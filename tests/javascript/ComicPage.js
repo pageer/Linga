@@ -52,7 +52,7 @@ describe("A comic book", function() {
 	it("should be able to extract book info from the DOM", function() {
 		var markup = '<div>'+
 			'<span class="book-name">foo</span>' +
-			'<span class="book-filepath">fizz/buzz</span>'
+			'<span class="book-filepath">fizz/buzz</span>' +
 			'</div>';
 		this.book.base_node = markup;
 		this.book.setDomNodes();
@@ -66,6 +66,7 @@ describe("A comic book", function() {
 	it("should be able to set and fetch the current page", function() {
 		this.book.addPages(this.test_pages);
 		spyOn(this.book, 'setPageInDom');
+		spyOn(this.book, 'updatePage')
 		
 		expect(this.book.currentPage()).toEqual(this.test_pages[0]);
 		
@@ -73,9 +74,12 @@ describe("A comic book", function() {
 		
 		expect(this.book.currentPage()).toEqual(this.test_pages[2]);
 		expect(this.book.setPageInDom).toHaveBeenCalled();
+		expect(this.book.updatePage).toHaveBeenCalled();
 	});
 	
 	it("should track page number", function() {
+		spyOn(this.book, 'updatePage');
+		
 		this.book.addPages(this.test_pages);
 		
 		this.book.goToNext();
@@ -86,11 +90,13 @@ describe("A comic book", function() {
 		
 		this.book.goToPrev();
 		expect(this.book.pageNumber()).toEqual(2);
+		expect(this.book.updatePage).toHaveBeenCalled();
 	});
 	
 	it("should be able to go to navigate back and forth", function() {
 		this.book.addPages(this.test_pages);
 		spyOn(this.book, 'setPageInDom');
+		spyOn(this.book, 'updatePage');
 		
 		this.book.goToPage(2);
 		this.book.goToNext();
@@ -101,6 +107,7 @@ describe("A comic book", function() {
 		
 		expect(this.book.currentPage()).toEqual(this.test_pages[1]);
 		expect(this.book.setPageInDom.calls.count()).toEqual(3);
+		expect(this.book.updatePage).toHaveBeenCalled();
 	});
 	
 	it("should report all page numbers starting from one", function() {
@@ -111,6 +118,8 @@ describe("A comic book", function() {
 	});
 	
 	it("should ignore navigation to before first page", function() {
+		spyOn(this.book, 'updatePage');
+		
 		this.book.addPages(this.test_pages);
 		
 		expect(this.book.pageNumber()).toEqual(1);
@@ -123,9 +132,12 @@ describe("A comic book", function() {
 		this.book.goToPage(0);
 		
 		expect(this.book.pageNumber()).toEqual(2);
+		expect(this.book.updatePage).toHaveBeenCalled();
 	});
 	
 	it("should ignore navigation to after last page", function() {
+		spyOn(this.book, 'updatePage');
+		
 		this.book.addPages(this.test_pages);
 		this.book.goToPage(3);
 		
@@ -139,6 +151,18 @@ describe("A comic book", function() {
 		this.book.goToPage(4);
 		
 		expect(this.book.pageNumber()).toEqual(2);
+		expect(this.book.updatePage).toHaveBeenCalled();
+	});
+	
+	it("should ignore DOM change if image is already the one requested", function() {
+		spyOn(this.book, 'updatePage');
+		this.book.addPages(this.test_pages);
+		this.book.$image.attr('src', '#bar');
+		spyOn(this.book.$image, 'closest');
+		
+		this.book.goToPage(2);
+		
+		expect(this.book.$image.closest).not.toHaveBeenCalled();
 	});
 	
 });

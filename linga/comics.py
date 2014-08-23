@@ -162,6 +162,7 @@ class ComicLister:
 				ret.extend(child_paths)
 			elif is_supported_format(full_path):
 				ret.append(full_path)
+		ret.sort()
 		return ret
 	
 	def get_books(self, path=''):

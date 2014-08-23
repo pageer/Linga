@@ -99,10 +99,12 @@ function ComicViewModel() {
 	
 	this.setPageInDom = function() {
 		var $curr_link = this.$links.eq(this.pageNumber() - 1);
-		this.$image.closest(this.selectors.image_container).addClass('loading');
-		this.$image.attr('src', $curr_link.attr('href'));
-		this.$links.removeClass('current-img')
-		$curr_link.addClass('current-img');
+		if (this.$image.attr('src') != $curr_link.attr('href')) {
+			this.$image.closest(this.selectors.image_container).addClass('loading');
+			this.$image.attr('src', $curr_link.attr('href'));
+			this.$links.removeClass('current-img')
+			$curr_link.addClass('current-img');
+		}
 	};
 	
 	this.getBaseNode = function() {
