@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import os
 import sys
+import datetime
 import unittest
 import zipfile
 
@@ -71,6 +72,7 @@ class TestComicLister(unittest.TestCase):
 			'baz.cbz',
 			'FIZZ.CBZ',
 		]
+		rel_paths.sort()
 		
 		self.assertEqual(3, len(book_list))
 		for i in range(0, 3):
@@ -392,6 +394,10 @@ class TestComicMetadata(unittest.TestCase):
 		self.assertEquals(m.user_id, 1)
 		self.assertEquals(m.book_relpath, 'foo/bar.cbz')
 	
+	def test_should_get_nicer_date_format(self):
+		c = ComicMetadata()
+		c.last_access = datetime.datetime(2001, 2, 3, 4, 5, 6, 7)
+		self.assertEquals(c.last_access_date(), '2001-02-03 04:05:06')
 	
 if __name__ == '__main__':
     unittest.main()

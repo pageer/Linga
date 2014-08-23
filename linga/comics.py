@@ -214,10 +214,15 @@ class ComicMetadata(db.Model):
 	book_relpath = db.Column(db.String(256), nullable=False, primary_key=True)
 	last_page = db.Column(db.Integer)
 	last_access = db.Column(db.DateTime, nullable=False)
+	finished_book = db.Column(db.Boolean, nullable=False)
 	
 	def __init__(self, userid=None, bookpath=None):
 		self.user_id = userid
 		self.book_relpath = bookpath
 		self.last_page = 1
 		self.last_access = datetime.now()
+		self.finished_book = False
+	
+	def last_access_date(self):
+		return self.last_access.strftime('%Y-%m-%d %H:%M:%S')
 	

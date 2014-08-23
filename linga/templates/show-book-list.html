@@ -21,6 +21,7 @@ Available Comic Books
 	<script>
 		$(document).ready(function() {
 			$('.book-listing .item-dir .dir-name').on('click', function(e) {
+				e.preventDefault();
 				$(this).parent().toggleClass('closed');
 			});
 		});
