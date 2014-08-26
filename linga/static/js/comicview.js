@@ -10,6 +10,7 @@ function ComicViewModel() {
 	this.pageNumber = ko.observable(1);
 	this.metadataVisible = ko.observable(false);
 	this.name = ko.observable('');
+	this.fitHeight = ko.observable(false);
 	this.relpath = '';
 	
 	this.selectors = {
@@ -86,6 +87,12 @@ function ComicViewModel() {
 		);
 	};
 	
+	this.getFitHeight = function() {
+		return this.fitHeight() ?
+		       ($(window).height() - this.imageContainerOffset.top + 'px') :
+			   'none';
+	};
+	
 	this.getDataFromDom = function() {
 		var self = this;
 		this.name(this.getBaseNode().find(this.selectors.book_name).text());
@@ -116,6 +123,15 @@ function ComicViewModel() {
 		    $base = this.getBaseNode();
 		this.$links = $base.find(this.selectors.page_link);
 		this.$image = $base.find(this.selectors.main_image);
+		this.$image_container = $base.find(this.selectors.image_container);
+		this.imageContainerOffset = this.$image_container.offset();
+		
+		$(window).resize(function() {
+			if (self.fitHeight()) {
+				self.$image.css('max-height', self.getFitHeight());
+			}
+		});
+		
 		$base.find(this.selectors.next_link).off('click').on('click', function() {
 			self.goToNext();
 			return false;
@@ -130,6 +146,7 @@ function ComicViewModel() {
 		$base.off('click').on('click', function() {
 			$base.find('.show-hover').removeClass('show-hover');
 		});
+		
 		this.$links.off('click').on('click', function() {
 			var index = parseInt($(this).attr('data-index'), 10);
 			self.goToPage(index);
@@ -140,7 +157,7 @@ function ComicViewModel() {
 			$(window).scrollTop(0);
 		});
 		this.$image.off('click').on('click', function() {
-			$(this).closest('.image-content').toggleClass('show-hover');
+			$(this).closest(self.selectors.image_container).toggleClass('show-hover');
 			return false;
 		});
 		this.$image.off('dragstart').on('dragstart', function(e) {
