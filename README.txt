@@ -6,3 +6,7 @@ Linga requires Python 2.7 and the following packages, availbe via pip:
 - flask-sqlalchemy
 - flask-login
 - rarfile
+
+THIRD-PARTY PACKAGES
+====================
+TouchSwipe-Jquery by Matt Bryson (MIT/GPL2 license)

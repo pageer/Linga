@@ -82,7 +82,11 @@ function ComicViewModel() {
 	this.updatePage = function() {
 		$.post(
 			SCRIPT_ROOT + '/book/update/page',
-			{relpath: this.relpath, page: this.pageNumber},
+			{
+				relpath: this.relpath,
+				page: this.pageNumber(),
+				finished: this.pageCount() == this.pageNumber()
+			},
 			function(){}
 		);
 	};
@@ -162,6 +166,19 @@ function ComicViewModel() {
 		});
 		this.$image.off('dragstart').on('dragstart', function(e) {
 			e.preventDefault();
+		});
+		
+		this.$image_container.swipe({
+			swipe: function(event, direction, distance, duration, fingerCount, fingerData) {
+				switch (direction) {
+					case 'right':
+						self.goToPrev();
+						break;
+					case 'left':
+						self.goToNext();
+						break;
+				}
+			}
 		});
 	};
 	

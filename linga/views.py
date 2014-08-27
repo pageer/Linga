@@ -9,6 +9,9 @@ from linga import User, app, db, user_query
 from linga.comics import (ComicLister, Comic, ComicMetadata, comic_query,
 						  relpath_to_book, add_sep)
 
+# Create any missing tables.
+db.create_all()
+
 def get_book(path):
 	ret = relpath_to_book(add_sep(path))
 	ret.set_rel_path(app.config['BOOK_PATH'])
@@ -116,6 +119,7 @@ def user_create():
 def update_page():
 	path = request.form.get('relpath')
 	page = request.form.get('page')
+	finished = request.form.get('finished')
 	uid = current_user.user_id
 	if path and uid and page:
 		data = comic_query().filter_by(user_id=uid, book_relpath=path).first()
@@ -123,6 +127,8 @@ def update_page():
 			data = ComicMetadata(uid, path)
 		data.last_access = datetime.now()
 		data.last_page = page
+		if finished:
+			data.finished_book = True
 		try:
 			db.session.add(data)
 			db.session.commit()

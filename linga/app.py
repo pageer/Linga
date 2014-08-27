@@ -12,7 +12,6 @@ app.config.from_object(__name__)
 app.config.from_pyfile('../config.py', silent=True)
 
 db = SQLAlchemy(app)
-db.create_all()
 
 login_manager = LoginManager()
 # Try to accomodate old versions of flask-login
