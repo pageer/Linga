@@ -169,15 +169,11 @@ function ComicViewModel() {
 		});
 		
 		this.$image_container.swipe({
-			swipe: function(event, direction, distance, duration, fingerCount, fingerData) {
-				switch (direction) {
-					case 'right':
-						self.goToPrev();
-						break;
-					case 'left':
-						self.goToNext();
-						break;
-				}
+			swipeLeft: function(event, direction, distance, duration, fingerCount, fingerData) {
+				self.goToNext();
+			},
+			swipeRight: function(event, direction, distance, duration, fingerCount, fingerData) {
+				self.goToPrev();
 			}
 		});
 	};
