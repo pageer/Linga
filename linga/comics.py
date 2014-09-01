@@ -212,9 +212,11 @@ class ComicMetadata(db.Model):
 	
 	user_id = db.Column(db.Integer, db.ForeignKey('linga_users.user_id'), nullable=False, primary_key=True)
 	book_relpath = db.Column(db.String(256), nullable=False, primary_key=True)
-	last_page = db.Column(db.Integer)
-	last_access = db.Column(db.DateTime, nullable=False)
-	finished_book = db.Column(db.Boolean, nullable=False)
+	last_page = db.Column(db.Integer, nullable=False, default=1)
+	last_access = db.Column(db.DateTime, nullable=False, default=datetime.now())
+	finished_book = db.Column(db.Boolean, nullable=False, default=False)
+	fit_mode = db.Column(db.String(length=10), nullable=False, default="full")
+	right_to_left = db.Column(db.Boolean, nullable=False, default=False)
 	
 	def __init__(self, userid=None, bookpath=None):
 		self.user_id = userid
@@ -222,6 +224,11 @@ class ComicMetadata(db.Model):
 		self.last_page = 1
 		self.last_access = datetime.now()
 		self.finished_book = False
+		self.fit_mode = "full"
+		self.right_to_left = False
+	
+	def book_name(self):
+		return os.path.basename(self.book_relpath)
 	
 	def last_access_date(self):
 		return self.last_access.strftime('%Y-%m-%d %H:%M:%S')
