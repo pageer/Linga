@@ -230,6 +230,9 @@ class ComicMetadata(db.Model):
 	def book_name(self):
 		return os.path.basename(self.book_relpath)
 	
+	def disp_relpath(self):
+		return remove_sep(self.book_relpath)
+	
 	def last_access_date(self):
 		return self.last_access.strftime('%Y-%m-%d %H:%M:%S')
 	

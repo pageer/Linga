@@ -34,7 +34,7 @@ Available Comic Books
 	<div>
 		<ul>
 			{% for b in recent %}
-			<li><a href="{{url_for('show_book', book=b.book_relpath)}}">{{b.book_name()}}</a></li>
+			<li><a href="{{url_for('show_book', book=b.disp_relpath())}}">{{b.book_name()}}</a></li>
 			{% endfor %}
 		</ul>
 	</div>
