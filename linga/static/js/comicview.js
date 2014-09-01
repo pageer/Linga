@@ -10,7 +10,8 @@ function ComicViewModel() {
 	this.pageNumber = ko.observable(1);
 	this.metadataVisible = ko.observable(false);
 	this.name = ko.observable('');
-	this.fitHeight = ko.observable(false);
+	this.fitMode = ko.observable('full');
+	this.rightToLeft = ko.observable(false);
 	this.relpath = '';
 	
 	this.selectors = {
@@ -60,12 +61,14 @@ function ComicViewModel() {
 		return this.pages()[this.pageNumber() - 1];
 	}, this);
 	
-	this.goToPage = function(index) {
+	this.goToPage = function(index, skip_update) {
 		if (0 < index && index <= this.pageCount()) {
 			this.pageNumber(index);
 			localStorage.setItem('page:' + this.name(), index);
 			this.setPageInDom();
-			this.updatePage();
+			if (! skip_update) {
+				this.updatePage();
+			}
 		}
 	};
 	
@@ -79,20 +82,38 @@ function ComicViewModel() {
 		this.goToPage(curr_page - 1);
 	};
 	
+	this.pageRight = function() {
+		if (this.rightToLeft()) {
+			this.goToPrev();
+		} else {
+			this.goToNext();
+		}
+	};
+	
+	this.pageLeft = function() {
+		if (this.rightToLeft()) {
+			this.goToNext();
+		} else {
+			this.goToPrev();
+		}
+	};
+	
 	this.updatePage = function() {
 		$.post(
 			SCRIPT_ROOT + '/book/update/page',
 			{
 				relpath: this.relpath,
 				page: this.pageNumber(),
-				finished: this.pageCount() == this.pageNumber()
+				finished: this.pageCount() == this.pageNumber(),
+				fitmode: this.fitMode(),
+				rtl: this.rightToLeft()
 			},
 			function(){}
 		);
 	};
 	
 	this.getFitHeight = function() {
-		return this.fitHeight() ?
+		return this.fitMode() == 'height' ?
 		       ($(window).height() - this.imageContainerOffset.top + 'px') :
 			   'none';
 	};
@@ -101,6 +122,9 @@ function ComicViewModel() {
 		var self = this;
 		this.name(this.getBaseNode().find(this.selectors.book_name).text());
 		this.relpath = this.getBaseNode().find(this.selectors.book_path).text();
+		this.rightToLeft(this.getBaseNode().find('input[name=rtol]').prop('checked'));
+		this.fitMode(this.getBaseNode().find('select[name=fitmode]>option:checked').val());
+		
 		this.$links.each(function() {
 			var $this = $(this),
 			    index = parseInt($this.attr("data-index"), 10);
@@ -123,25 +147,29 @@ function ComicViewModel() {
 	};
 	
 	this.setDomNodes = function() {
-		var self = this,
-		    $base = this.getBaseNode();
+		var $base = this.getBaseNode();
 		this.$links = $base.find(this.selectors.page_link);
 		this.$image = $base.find(this.selectors.main_image);
 		this.$image_container = $base.find(this.selectors.image_container);
 		this.imageContainerOffset = this.$image_container.offset();
+	};
+	
+	this.initEvents = function() {
+		var self = this,
+		    $base = this.getBaseNode();
 		
 		$(window).resize(function() {
-			if (self.fitHeight()) {
+			if (self.fitMode() == 'height') {
 				self.$image.css('max-height', self.getFitHeight());
 			}
 		});
 		
 		$base.find(this.selectors.next_link).off('click').on('click', function() {
-			self.goToNext();
+			self.pageRight();
 			return false;
 		});
 		$base.find(this.selectors.prev_link).off('click').on('click', function() {
-			self.goToPrev();
+			self.pageLeft();
 			return false;
 		});
 		$base.find(this.selectors.curr_page).off('change').on('change', function() {
@@ -168,14 +196,16 @@ function ComicViewModel() {
 			e.preventDefault();
 		});
 		
-		this.$image_container.swipe({
-			swipeLeft: function(event, direction, distance, duration, fingerCount, fingerData) {
-				self.goToNext();
-			},
-			swipeRight: function(event, direction, distance, duration, fingerCount, fingerData) {
-				self.goToPrev();
-			}
-		});
+		if (this.$image_container.swipe) {
+			this.$image_container.swipe({
+				swipeLeft: function(event, direction, distance, duration, fingerCount, fingerData) {
+					self.pageRight();
+				},
+				swipeRight: function(event, direction, distance, duration, fingerCount, fingerData) {
+					self.pageLeft();
+				}
+			});
+		}
 	};
 	
 }
@@ -184,9 +214,10 @@ function ComicViewModel() {
 $(document).ready(function() {
 	var page = new ComicViewModel();
 	window.p=page;
-	ko.applyBindings(page);
 	page.setDomNodes()
 	page.getDataFromDom();
+	ko.applyBindings(page);
+	page.initEvents();
 	var last_page = parseInt(page.getBaseNode().find(page.selectors.book_page).text(), 10);
-	page.goToPage(last_page);
+	page.goToPage(last_page, true);
 });

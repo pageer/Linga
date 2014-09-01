@@ -27,8 +27,9 @@ def show_book_list():
 	lister = ComicLister(app.config['BOOK_PATH'])
 	book_list = lister.get_books()
 	books = lister.group_by_path(book_list)
+	recent_metadata = comic_query().filter_by(user_id=current_user.user_id).order_by(ComicMetadata.last_access.desc()).limit(10)
 	return render_template('show-book-list.html',
-						   books = books)
+						   books=books, recent=recent_metadata)
 
 @app.route('/books/read/<string:book>')
 @login_required
@@ -117,16 +118,21 @@ def user_create():
 @app.route('/book/update/page', methods=['POST'])
 @login_required
 def update_page():
+	uid = current_user.user_id
 	path = request.form.get('relpath')
 	page = request.form.get('page')
-	finished = request.form.get('finished')
-	uid = current_user.user_id
+	finished = request.form.get('finished') == 'true'
+	fit_mode = request.form.get('fitmode') or "full"
+	rtol = request.form.get('rtl') == 'true'
+	
 	if path and uid and page:
 		data = comic_query().filter_by(user_id=uid, book_relpath=path).first()
 		if data is None:
 			data = ComicMetadata(uid, path)
 		data.last_access = datetime.now()
 		data.last_page = page
+		data.fit_mode = fit_mode
+		data.right_to_left = rtol
 		if finished:
 			data.finished_book = True
 		try:
@@ -134,5 +140,5 @@ def update_page():
 			db.session.commit()
 			return jsonify({'status': True})
 		except Exception as err:
-			return jsonify({'status': False, 'error': err})
+			return jsonify({'status': False, 'error': err.message})
 	return jsonify({'status': False, 'error': 'Missing data'})

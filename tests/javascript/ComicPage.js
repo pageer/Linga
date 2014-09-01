@@ -33,34 +33,114 @@ describe("A comic book", function() {
 		expect(this.book.pages()[0]).toEqual({name: 'foo'});
 	});
 	
-	it("should be able to extract pages from the DOM", function() {
-		var markup = '<div>'+
-			'<a class="page-link" data-index="0" href="#foo">Link1</a>'+
-			'<a class="page-link" data-index="1" href="#bar">Link2</a>'+
-			'<a class="page-link" data-index="2" href="#baz">Link3</a>'+
-			'</div>';
-		this.book.base_node = markup;
-		this.book.setDomNodes();
+	describe("when extracing book metadata", function() {
 		
-		this.book.getDataFromDom(markup);
-		
-		expect(this.book.pages()[0]).toEqual(new ComicPage('#foo', 'Link1', 0));
-		expect(this.book.pages()[1]).toEqual(new ComicPage('#bar', 'Link2', 1));
-		expect(this.book.pages()[2]).toEqual(new ComicPage('#baz', 'Link3', 2));
-	});
+		beforeEach(function() {
+			this.initMarkup = function(rtol_checked, full_checked, height_checked, width_checked) {
+				rtol_checked = rtol_checked ? 'checked' : '';
+				full_checked = full_checked ? 'selected' : '';
+				width_checked = width_checked ? 'selected' : '';
+				height_checked = height_checked ? 'selected' : '';
+				return '<div>'+
+					'<span class="book-name">foo</span>' +
+					'<span class="book-filepath">fizz/buzz</span>' +
+					'<select name="fitmode">' +
+					'<option value="full" '+full_checked+'>Baz</option>' +
+					'<option value="height" '+height_checked+'>Foo</option>' +
+					'<option value="width" '+width_checked+'>Bar</option></select>' +
+					'<input name="rtol" '+rtol_checked+' value=1"/>' +
+					'<div>'+
+					'<a class="page-link" data-index="0" href="#foo">Link1</a>' +
+					'<a class="page-link" data-index="1" href="#bar">Link2</a>' +
+					'<a class="page-link" data-index="2" href="#baz">Link3</a>' +
+					'</div>' +
+					'</div>';
+			};
+		});
 	
-	it("should be able to extract book info from the DOM", function() {
-		var markup = '<div>'+
-			'<span class="book-name">foo</span>' +
-			'<span class="book-filepath">fizz/buzz</span>' +
-			'</div>';
-		this.book.base_node = markup;
-		this.book.setDomNodes();
+		it("should get page list from DOM", function() {
+			this.book.base_node = this.initMarkup();
+			this.book.setDomNodes();
+			
+			this.book.getDataFromDom();
+			
+			expect(this.book.pages()[0]).toEqual(new ComicPage('#foo', 'Link1', 0));
+			expect(this.book.pages()[1]).toEqual(new ComicPage('#bar', 'Link2', 1));
+			expect(this.book.pages()[2]).toEqual(new ComicPage('#baz', 'Link3', 2));
+		});
 		
-		this.book.getDataFromDom(markup);
+		it("should get book name from DOM", function() {
+			this.book.base_node = this.initMarkup();
+			this.book.setDomNodes();
+			
+			this.book.getDataFromDom();
+			
+			expect(this.book.name()).toEqual('foo');
+		});
+	
+		it("should get book relpath from DOM", function() {
+			this.book.base_node = this.initMarkup();
+			this.book.setDomNodes();
+			
+			this.book.getDataFromDom();
+			
+			expect(this.book.relpath).toEqual('fizz/buzz');
+		});
+	
+		it("should get disabled right-to-left from the DOM", function() {
+			this.book.base_node = this.initMarkup(false);
+			this.book.setDomNodes();
+			
+			this.book.getDataFromDom();
+			
+			expect(this.book.rightToLeft()).toBe(false);
+		});
+
 		
-		expect(this.book.name()).toEqual('foo');
-		expect(this.book.relpath).toEqual('fizz/buzz');
+		it("should get enabled right-to-left from the DOM", function() {
+			this.book.base_node = this.initMarkup(true);
+			this.book.setDomNodes();
+			
+			this.book.getDataFromDom();
+			
+			expect(this.book.rightToLeft()).toBe(true);
+		});
+		
+		it("should get full size enabled from the DOM", function() {
+			this.book.base_node = this.initMarkup(false, true);
+			this.book.setDomNodes();
+			
+			this.book.getDataFromDom();
+			
+			expect(this.book.fitMode()).toEqual('full');
+		});
+		
+		it("should get fit height enable from the DOM", function() {
+			this.book.base_node = this.initMarkup(false, false, true);
+			this.book.setDomNodes();
+			
+			this.book.getDataFromDom();
+			
+			expect(this.book.fitMode()).toEqual('height');
+		});
+		
+		it("should get fit width enabled from the DOM", function() {
+			this.book.base_node = this.initMarkup(false, false, false, true);
+			this.book.setDomNodes();
+			
+			this.book.getDataFromDom();
+			
+			expect(this.book.fitMode()).toEqual('width');
+		});
+		
+		it("should default to full size when nothing is set in the DOM", function() {
+			this.book.base_node = this.initMarkup();
+			this.book.setDomNodes();
+			
+			this.book.getDataFromDom();
+			
+			expect(this.book.fitMode()).toEqual('full');
+		});
 	});
 	
 	it("should be able to set and fetch the current page", function() {
@@ -152,6 +232,64 @@ describe("A comic book", function() {
 		
 		expect(this.book.pageNumber()).toEqual(2);
 		expect(this.book.updatePage).toHaveBeenCalled();
+	});
+	
+	it("should skip server update on goToPage when requested", function() {
+		spyOn(this.book, 'updatePage');
+		this.book.addPage(this.test_pages);
+		
+		this.book.goToPage(2, true);
+		
+		expect(this.book.updatePage).not.toHaveBeenCalled();
+	});
+	
+	it("should start in full image mode by default", function() {
+		expect(this.book.fitMode()).toEqual('full');
+	});
+	
+	it("should go to next page on right navigation", function() {
+		spyOn(this.book, 'updatePage');
+		this.book.addPages(this.test_pages);
+		
+		this.book.goToPage(2);
+		this.book.pageRight();
+		
+		expect(this.book.pageNumber()).toBe(3);
+	});
+	
+	it("should go to previous page on left navigation", function() {
+		spyOn(this.book, 'updatePage');
+		this.book.addPages(this.test_pages);
+		
+		this.book.goToPage(2);
+		this.book.pageLeft();
+		
+		expect(this.book.pageNumber()).toBe(1);
+	});
+	
+	it("should navigate left-to-right by default", function() {
+		expect(this.book.rightToLeft()).toBe(false);
+	});
+	
+	describe("when right-to-left navigation is enabled", function() {
+		beforeEach(function() {
+			spyOn(this.book, 'updatePage');
+			this.book.rightToLeft(true);
+			this.book.addPages(this.test_pages);
+			this.book.goToPage(2);
+		});
+		
+		it("should go to next page on left navigation", function() {
+			this.book.pageLeft();
+			
+			expect(this.book.pageNumber()).toBe(3);
+		});
+		
+		it("should go to previous page on right navigation", function() {
+			this.book.pageRight();
+			
+			expect(this.book.pageNumber()).toBe(1);
+		});
 	});
 	
 	it("should ignore DOM change if image is already the one requested", function() {

@@ -1,13 +1,24 @@
+{% macro option(label, val)%}
+<option value="{{val}}" {% if metadata.fit_mode == val%}selected="selected"{% endif%}>{{label}}</option>
+{% endmacro %}
 {% macro nav_menu() %}
 <div class="nav-links">
 	<div class="nav-control">
-		<a href="" class="prev-link">&#8656; Prev</a>
+		<a href="" class="prev-link">&#8656;<span data-bind="text: rightToLeft() ? 'Next' : 'Prev'">Prev</span></a>
 		<select class="curr-page" data-bind="options: allPageNumbers(),
 											 value: pageNumber()">
 		</select> of <span class="total-pages" data-bind="text: pageCount()"></span>
-		<a href="" class="next-link">Next&#8658;</a>
+		<a href="" class="next-link"><span data-bind="text: rightToLeft() ? 'Prev' : 'Next'">Next</span>&#8658;</a>
 		<span class="separator">|</span>
-		<label><input type="checkbox" data-bind="checked: fitHeight"> Fit Height</label>
+		<select name="fitmode" class="img-size" data-bind="value: fitMode">
+			{{option('Full Size', 'full')}}
+			{{option('Fit Height', 'height')}}
+			{{option('Fit Width', 'width')}}
+		</select>
+		<label title="Right-to-left reading">
+			<input name="rtol" type="checkbox" {{'checked' if metadata.right_to_left else ''}} value="1" data-bind="checked: rightToLeft">
+			L &#8592; R
+		</label>
 	</div>
 </div>
 {% endmacro %}
@@ -61,7 +72,9 @@
 	<div class="image-content">
 		<div class="loading-overlay"></div>
 		<a href="#" class="big-link prev-link"><span class="top">&lsaquo;</span><span class="bottom">&lsaquo;</span></a>
-		<img class="main-image" data-bind="style: { maxHeight: getFitHeight() }" src="{{url_for('show_page', book=book.disp_relpath(), page=metadata.last_page)}}" alt="">
+		<img class="main-image" data-bind="style: { maxHeight: getFitHeight() },
+		                                   css: { fitWidth: fitMode() == 'width' }"
+			 src="{{url_for('show_page', book=book.disp_relpath(), page=metadata.last_page)}}" alt="">
 		<a href="#" class="big-link next-link"><span class="top">&rsaquo;</span><span class="bottom">&rsaquo;</span></a>
 	</div>
 </body>

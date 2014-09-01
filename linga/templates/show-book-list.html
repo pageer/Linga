@@ -29,6 +29,16 @@ Available Comic Books
 {% endblock %}
 {% block bodycontent %}
 	{{user_menu()}}
+	<h2>Recently Read</h2>
+	{% if recent %}
+	<div>
+		<ul>
+			{% for b in recent %}
+			<li><a href="{{url_for('show_book', book=b.book_relpath)}}">{{b.book_name()}}</a></li>
+			{% endfor %}
+		</ul>
+	</div>
+	{% endif %}
 	<h2>Available Books</h2>
 	<div class="book-listing">
 		{{show_books(books)}}

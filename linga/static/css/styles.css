@@ -192,6 +192,10 @@ body.book-page {
 	max-width: 100%;
 }
 
+.main-image.fitWidth {
+	width: 100%;
+}
+
 /* General app styles */
 .app-menu {
 	float: right;
