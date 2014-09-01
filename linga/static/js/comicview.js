@@ -24,7 +24,8 @@ function ComicViewModel() {
 		next_link: '.next-link',
 		prev_link: '.prev-link',
 		curr_page: '.curr-page',
-		page_cnt: '.total-pages'
+		page_cnt: '.total-pages',
+		alert: '.dynamic-alert'
 	};
 	
 	this.$links = [];
@@ -99,6 +100,7 @@ function ComicViewModel() {
 	};
 	
 	this.updatePage = function() {
+		var self = this;
 		$.post(
 			SCRIPT_ROOT + '/book/update/page',
 			{
@@ -108,7 +110,11 @@ function ComicViewModel() {
 				fitmode: this.fitMode(),
 				rtl: this.rightToLeft()
 			},
-			function(){}
+			function(data){
+				if (! data.status) {
+					self.showAlert('Error updating last page: ' + data.error, 'danger', 5);
+				}
+			}
 		);
 	};
 	
@@ -116,6 +122,22 @@ function ComicViewModel() {
 		return this.fitMode() == 'height' ?
 		       ($(window).height() - this.imageContainerOffset.top + 'px') :
 			   'none';
+	};
+	
+	this.showAlert = function(text, type, delay) {
+		var alert_type = type ? ('alert-'+type) : '',
+		    self = this;
+		if (this.alert_timeout) {
+			clearTimeout(this.alert_timeout);
+			delete this.alert_timeout;
+		}
+		this.$alert.addClass('show ' + alert_type);
+		this.$alert.find('.alert-text').text(text);
+		if (delay) {
+			self.alert_timeout = setTimeout(function(){
+				self.$alert.removeClass('show '+alert_type);
+			}, delay * 1000);
+		}
 	};
 	
 	this.getDataFromDom = function() {
@@ -152,6 +174,7 @@ function ComicViewModel() {
 		this.$image = $base.find(this.selectors.main_image);
 		this.$image_container = $base.find(this.selectors.image_container);
 		this.imageContainerOffset = this.$image_container.offset();
+		this.$alert = $base.find(this.selectors.alert);
 	};
 	
 	this.initEvents = function() {

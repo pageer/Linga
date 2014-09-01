@@ -138,7 +138,7 @@ def update_page():
 		try:
 			db.session.add(data)
 			db.session.commit()
-			return jsonify({'status': True})
+			return jsonify({'success': True})
 		except Exception as err:
-			return jsonify({'status': False, 'error': err.message})
-	return jsonify({'status': False, 'error': 'Missing data'})
+			return jsonify({'success': False, 'error': err.message})
+	return jsonify({'success': False, 'error': 'Missing data'})

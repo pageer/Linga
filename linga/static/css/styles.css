@@ -202,6 +202,23 @@ body.book-page {
 	margin-right: 10px;
 }
 
+.dynamic-alert {
+	visibility: hidden;
+	position: fixed;
+	bottom: 0;
+	right: 20px;
+	left: 20px;
+	text-align: center;
+	opacity: 0;
+	transition: visibility 0s linear 0.5s, opacity 0.5s linear;
+}
+
+.dynamic-alert.show {
+	visibility: visible;
+	opacity: 0.8;
+	transition-delay: 0s;
+}
+
 /* Book listing page */
 .book-listing .closed ul {
 	display: none;
