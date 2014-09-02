@@ -111,7 +111,7 @@ function ComicViewModel() {
 				rtl: this.rightToLeft()
 			},
 			function(data){
-				if (! data.status) {
+				if (! data.success) {
 					self.showAlert('Error updating last page: ' + data.error, 'danger', 5);
 				}
 			}
