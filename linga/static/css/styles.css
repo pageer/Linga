@@ -185,6 +185,7 @@ body.book-page {
 	background-repeat: no-repeat;
 	background-attachment: fixed;
 	background-position: center;
+	z-index:100
 }
 
 .image-content.loading .loading-overlay,
