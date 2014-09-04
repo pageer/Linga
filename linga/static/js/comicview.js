@@ -225,7 +225,7 @@ function ComicViewModel() {
 			$(this).closest(self.selectors.image_container).removeClass('loading');
 			$(window).scrollTop(0);
 		});
-		this.$image.off('load').on('load', function() {
+		this.$sec_image.off('load').on('load', function() {
 			$(this).closest(self.selectors.image_container).removeClass('sec-loading');
 		});
 		
