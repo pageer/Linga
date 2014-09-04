@@ -12,6 +12,7 @@ function ComicViewModel() {
 	this.name = ko.observable('');
 	this.fitMode = ko.observable('full');
 	this.rightToLeft = ko.observable(false);
+	this.dualPage = ko.observable(false);
 	this.relpath = '';
 	
 	this.selectors = {
@@ -20,6 +21,7 @@ function ComicViewModel() {
 		book_path: '.book-filepath',
 		book_page: '.book-last-page',
 		main_image: '.main-image',
+		sec_image: '.secondary-image',
 		image_container: '.image-content',
 		next_link: '.next-link',
 		prev_link: '.prev-link',
@@ -75,12 +77,12 @@ function ComicViewModel() {
 	
 	this.goToNext = function() {
 		var curr_page = this.pageNumber();
-		this.goToPage(curr_page + 1);
+		this.goToPage(curr_page + (this.dualPage() ? 2 : 1));
 	};
 	
 	this.goToPrev = function() {
 		var curr_page = this.pageNumber();
-		this.goToPage(curr_page - 1);
+		this.goToPage(curr_page - (this.dualPage() ? 2 : 1));
 	};
 	
 	this.pageRight = function() {
@@ -106,7 +108,7 @@ function ComicViewModel() {
 			{
 				relpath: this.relpath,
 				page: this.pageNumber(),
-				finished: this.pageCount() == this.pageNumber(),
+				finished: this.pageCount() >= this.pageNumber(),
 				fitmode: this.fitMode(),
 				rtl: this.rightToLeft()
 			},
@@ -119,9 +121,10 @@ function ComicViewModel() {
 	};
 	
 	this.getFitHeight = function() {
-		return this.fitMode() == 'height' ?
-		       ($(window).height() - this.imageContainerOffset.top + 'px') :
-			   'none';
+		var pad = parseInt(this.$image_container.css('padding-top'), 10) +
+		          parseInt(this.$image_container.css('margin-top'), 10);
+		var height = $(window).height() - this.imageContainerOffset.top - pad;
+		return this.fitMode() == 'height' ? (height + 'px') : 'none';
 	};
 	
 	this.showAlert = function(text, type, delay) {
@@ -145,6 +148,7 @@ function ComicViewModel() {
 		this.name(this.getBaseNode().find(this.selectors.book_name).text());
 		this.relpath = this.getBaseNode().find(this.selectors.book_path).text();
 		this.rightToLeft(this.getBaseNode().find('input[name=rtol]').prop('checked'));
+		this.dualPage(this.getBaseNode().find('input[name=dualpage]').prop('checked'));
 		this.fitMode(this.getBaseNode().find('select[name=fitmode]>option:checked').val());
 		
 		this.$links.each(function() {
@@ -159,6 +163,10 @@ function ComicViewModel() {
 		if (this.$image.attr('src') != $curr_link.attr('href')) {
 			this.$image.closest(this.selectors.image_container).addClass('loading');
 			this.$image.attr('src', $curr_link.attr('href'));
+			
+			var $sec_link = this.$links.eq(this.pageNumber());
+			this.$sec_image.attr('src', $sec_link.attr('href'));
+			
 			this.$links.removeClass('current-img')
 			$curr_link.addClass('current-img');
 		}
@@ -172,6 +180,7 @@ function ComicViewModel() {
 		var $base = this.getBaseNode();
 		this.$links = $base.find(this.selectors.page_link);
 		this.$image = $base.find(this.selectors.main_image);
+		this.$sec_image = $base.find(this.selectors.sec_image);
 		this.$image_container = $base.find(this.selectors.image_container);
 		this.imageContainerOffset = this.$image_container.offset();
 		this.$alert = $base.find(this.selectors.alert);
@@ -184,6 +193,7 @@ function ComicViewModel() {
 		$(window).resize(function() {
 			if (self.fitMode() == 'height') {
 				self.$image.css('max-height', self.getFitHeight());
+				self.$sec_image.css('max-height', self.getFitHeight());
 			}
 		});
 		

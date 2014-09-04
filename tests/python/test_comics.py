@@ -399,5 +399,16 @@ class TestComicMetadata(unittest.TestCase):
 		c.last_access = datetime.datetime(2001, 2, 3, 4, 5, 6, 7)
 		self.assertEquals(c.last_access_date(), '2001-02-03 04:05:06')
 	
+	def test_should_get_base_path_as_name(self):
+		c = ComicMetadata()
+		c.book_relpath = 'foo/bar/baz.cbz'
+		self.assertEquals(c.book_name(), 'baz.cbz')
+	
+	def test_should_escape_relpath(self):
+		c.ComicMetadata()
+		c.book_relpath = 'foo/bar/baz.cbz'
+		self.assertEquals(c.disp_relpath(), 'foo--bar--baz.cbz')
+	
+	
 if __name__ == '__main__':
     unittest.main()

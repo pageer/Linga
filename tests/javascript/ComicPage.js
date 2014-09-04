@@ -36,8 +36,9 @@ describe("A comic book", function() {
 	describe("when extracing book metadata", function() {
 		
 		beforeEach(function() {
-			this.initMarkup = function(rtol_checked, full_checked, height_checked, width_checked) {
+			this.initMarkup = function(rtol_checked, full_checked, height_checked, width_checked, dual_checked) {
 				rtol_checked = rtol_checked ? 'checked' : '';
+				dual_checked = dual_checked ? 'checked' : '';
 				full_checked = full_checked ? 'selected' : '';
 				width_checked = width_checked ? 'selected' : '';
 				height_checked = height_checked ? 'selected' : '';
@@ -49,6 +50,7 @@ describe("A comic book", function() {
 					'<option value="height" '+height_checked+'>Foo</option>' +
 					'<option value="width" '+width_checked+'>Bar</option></select>' +
 					'<input name="rtol" '+rtol_checked+' value=1"/>' +
+					'<input name="dualpage" '+dual_checked+' value=1"/>' +
 					'<div>'+
 					'<a class="page-link" data-index="0" href="#foo">Link1</a>' +
 					'<a class="page-link" data-index="1" href="#bar">Link2</a>' +
@@ -96,14 +98,31 @@ describe("A comic book", function() {
 			expect(this.book.rightToLeft()).toBe(false);
 		});
 
-		
-		it("should get enabled right-to-left from the DOM", function() {
-			this.book.base_node = this.initMarkup(true);
+		it("should get enabled dual-page from the DOM", function() {
+			this.book.base_node = this.initMarkup(false);
 			this.book.setDomNodes();
 			
 			this.book.getDataFromDom();
 			
-			expect(this.book.rightToLeft()).toBe(true);
+			expect(this.book.rightToLeft()).toBe(false);
+		});
+
+		it("should get disabled dual-page from the DOM", function() {
+			this.book.base_node = this.initMarkup();
+			this.book.setDomNodes();
+			
+			this.book.getDataFromDom();
+			
+			expect(this.book.dualPage()).toBe(false);
+		});
+				
+		it("should get enabled right-to-left from the DOM", function() {
+			this.book.base_node = this.initMarkup(false, false, false, false, true);
+			this.book.setDomNodes();
+			
+			this.book.getDataFromDom();
+			
+			expect(this.book.dualPage()).toBe(true);
 		});
 		
 		it("should get full size enabled from the DOM", function() {
@@ -188,6 +207,12 @@ describe("A comic book", function() {
 		expect(this.book.currentPage()).toEqual(this.test_pages[1]);
 		expect(this.book.setPageInDom.calls.count()).toEqual(3);
 		expect(this.book.updatePage).toHaveBeenCalled();
+	});
+	
+	describe("when dual-page mode is enabled", function() {
+		this.book.addPages(this.test_pages);
+		spyOn(this.book, 'setPageInDom');
+		spyOn(this.book, 'updatePage');
 	});
 	
 	it("should report all page numbers starting from one", function() {

@@ -1,3 +1,4 @@
+{% extends "layout.html" %}
 {% macro option(label, val)%}
 <option value="{{val}}" {% if metadata.fit_mode == val%}selected="selected"{% endif%}>{{label}}</option>
 {% endmacro %}
@@ -19,26 +20,26 @@
 			<input name="rtol" type="checkbox" {{'checked' if metadata.right_to_left else ''}} value="1" data-bind="checked: rightToLeft">
 			L &#8592; R
 		</label>
+		<label title="Display two pages at a time">
+			<input name="dualpage" type="checkbox" {{'checked' if metadata.dual_page else ''}} value="1" data-bind="checked: dualPage">
+			2-Page
+		</label>
 	</div>
 </div>
 {% endmacro %}
-<!DOCTYPE html>
-<html>
-<head>
-	<title>{{book.name}}</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link type="text/css" rel="stylesheet" href="{{url_for('static', filename='css/styles.css')}}">
-	<link href="//maxcdn.bootstrapcdn.com/bootswatch/3.2.0/cyborg/bootstrap.min.css" rel="stylesheet">
-	<script>
-		SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
-	</script>
-	<script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
-	<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-	<script src="http://cdnjs.cloudflare.com/ajax/libs/knockout/3.1.0/knockout-min.js"></script>
+
+{% block pagetitle %}{{book.name}}{% endblock %}
+
+{% block headscripts %}
 	<script src="{{url_for('static', filename='js/jquery.touchSwipe.min.js')}}"></script>
 	<script src="{{url_for('static', filename='js/comicview.js')}}"></script>
-</head>
-<body class="book-page">
+{% endblock %}
+
+{% block headermenu %}{% endblock %}
+
+{% block bodyattrs %}class="book-page"{% endblock %}
+
+{% block bodycontent %}
 	<noscript>
 		This page won't work with JavaScript disabled.
 	</noscript>
@@ -69,16 +70,24 @@
 			{% endfor%}
 		</ul>
 	</div>
-	<div class="image-content">
+	<div class="image-content" data-bind="css: { dualpage: dualPage(),
+												 r_to_l: rightToLeft() }">
 		<div class="loading-overlay"></div>
-		<a href="#" class="big-link prev-link"><span class="top">&lsaquo;</span><span class="bottom">&lsaquo;</span></a>
-		<img class="main-image" data-bind="style: { maxHeight: getFitHeight() },
-		                                   css: { fitWidth: fitMode() == 'width' }"
+		<img class="main-image fullSize" data-bind="style: { maxHeight: getFitHeight() },
+													css: { fitWidth: fitMode() == 'width',
+															fullSize: fitMode() == 'full' }"
 			 src="{{url_for('show_page', book=book.disp_relpath(), page=metadata.last_page)}}" alt="">
-		<a href="#" class="big-link next-link"><span class="top">&rsaquo;</span><span class="bottom">&rsaquo;</span></a>
+		<img class="secondary-image fullSize" data-bind="style: { maxHeight: getFitHeight() },
+		                                                 css: { fitWidth: fitMode() == 'width' }"
+			 src="{{url_for('show_page', book=book.disp_relpath(), page=metadata.last_page + 1)}}" alt="">
+		<a href="#" class="big-link prev-link">
+			<span class="top">&lsaquo;</span><span class="bottom">&lsaquo;</span>
+		</a>
+		<a href="#" class="big-link next-link">
+			<span class="top">&rsaquo;</span><span class="bottom">&rsaquo;</span>
+		</a>
 	</div>
 	<div class="dynamic-alert alert-error alert">
 		<span class="alert-text"></span>
 	</div>
-</body>
-</html>
+{% endblock %}

@@ -57,6 +57,9 @@ def get_mime_type(file_name):
 		return 'application/rar'
 	else:
 		return 'application/octet-stream'
+
+def filename_to_bookname(path):
+	return re.sub(r"[-_]+", ' ', os.path.splitext(os.path.basename(path))[0])
 	
 def comic_query():
 	return db.session.query(ComicMetadata)
@@ -70,7 +73,7 @@ class InvalidPageError(IndexError):
 
 class Comic:
 	def __init__(self, path, archive = None):
-		self.name = re.sub(r"[-_]+", ' ', os.path.splitext(os.path.basename(path))[0])
+		self.name = filename_to_bookname(path)
 		self.path = path
 		self.rel_path = path
 		self.current_file_index = -1
@@ -228,7 +231,7 @@ class ComicMetadata(db.Model):
 		self.right_to_left = False
 	
 	def book_name(self):
-		return os.path.basename(self.book_relpath)
+		return filename_to_bookname(self.book_relpath)
 	
 	def disp_relpath(self):
 		return remove_sep(self.book_relpath)

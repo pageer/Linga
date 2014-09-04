@@ -6,7 +6,7 @@ body.book-page {
 
 .header {
 	position: relative;
-	min-height: 65px;
+	height: 4em;
 }
 
 .header .menu-link {
@@ -144,6 +144,7 @@ body.book-page {
 .big-link .top {
 	top: 15%;
 }
+
 .big-link .bottom {
 	bottom: 15%;
 }
@@ -165,9 +166,11 @@ body.book-page {
 }
 
 .image-content {
-	position: relative;
+	position: absolute;
+	bottom: 0;
+	top: 4em;
 	text-align: center;
-	padding: 5px 0;
+	margin: 5px 0;
 	width: 100%;
 }
 
@@ -194,6 +197,54 @@ body.book-page {
 
 .main-image.fitWidth {
 	width: 100%;
+}
+
+.secondary-image {
+	display: none;
+}
+
+.dualpage.image-content .secondary-image {
+	display: block;
+}
+
+.dualpage.image-content img {
+	max-width: 50%;
+}
+
+.dualpage.image-content .main-image,
+.dualpage.image-content .secondary-image {
+	display: block;
+	position: absolute;
+}
+
+.dualpage.image-content .main-image {
+	right: 50%;
+	left: auto;
+}
+
+.dualpage.image-content .secondary-image {
+	left: 50%;
+	right: auto;
+}
+
+.r_to_l.dualpage.image-content .secondary-image {
+	right: 50%;
+	left: auto;
+}
+
+.r_to_l.dualpage.image-content .main-image {
+	left: 50%;
+	right: auto;
+}
+
+.dualpage.image-content .main-image,
+.dualpage.image-content .secondary-image {
+	
+}
+
+.dualpage .main-image.fitWidth,
+.dualpage .secondary-image.fitWidth {
+	width: 50%;
 }
 
 /* General app styles */

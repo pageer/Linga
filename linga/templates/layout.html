@@ -40,6 +40,7 @@
 			{% endfor %}
 		{% endif %}
 	{% endwith %}
+	{% block headermenu%}{{user_menu()}}{% endblock %}
 	{% block bodycontent %}{% endblock %}
 </body>
 </html>
