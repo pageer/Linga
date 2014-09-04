@@ -166,6 +166,9 @@ function ComicViewModel() {
 			
 			var $sec_link = this.$links.eq(this.pageNumber());
 			this.$sec_image.attr('src', $sec_link.attr('href'));
+			if (this.dualPage()) {
+				this.$sec_image.closest(this.selectors.image_container).addClass('sec-loading');
+			}
 			
 			this.$links.removeClass('current-img')
 			$curr_link.addClass('current-img');
@@ -217,17 +220,27 @@ function ComicViewModel() {
 			self.goToPage(index);
 			return false;
 		});
+		
 		this.$image.off('load').on('load', function() {
 			$(this).closest(self.selectors.image_container).removeClass('loading');
 			$(window).scrollTop(0);
 		});
-		this.$image.off('click').on('click', function() {
+		this.$image.off('load').on('load', function() {
+			$(this).closest(self.selectors.image_container).removeClass('sec-loading');
+		});
+		
+		var img_click = function() {
 			$(this).closest(self.selectors.image_container).toggleClass('show-hover');
 			return false;
-		});
-		this.$image.off('dragstart').on('dragstart', function(e) {
+		};
+		this.$image.off('click').on('click', img_click);
+		this.$sec_image.off('click').on('click', img_click);
+		
+		var drag_start = function(e) {
 			e.preventDefault();
-		});
+		};
+		this.$image.off('dragstart').on('dragstart', drag_start);
+		this.$sec_image.off('dragstart').on('dragstart', drag_start);
 		
 		if (this.$image_container.swipe) {
 			this.$image_container.swipe({

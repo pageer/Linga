@@ -187,7 +187,8 @@ body.book-page {
 	background-position: center;
 }
 
-.image-content.loading .loading-overlay {
+.image-content.loading .loading-overlay,
+.image-content.sec-loading .loading-overlay {
 	display: block;
 }
 
