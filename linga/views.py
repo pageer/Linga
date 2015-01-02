@@ -1,6 +1,7 @@
 import os.path
 import StringIO
 from datetime import datetime
+from PIL import Image
 from flask import (render_template, make_response, redirect, abort, url_for,
 				   send_file, flash, request, session, jsonify, g)
 from flask.ext.login import (login_required, login_user, logout_user, current_user)
@@ -51,9 +52,30 @@ def show_page(book, page):
 		sio.write(img_file)
 		sio.seek(0)
 		return send_file(sio, 'image/jpg')
-	except:
+	except Exception, err:
 		abort(404)
 
+@app.route('/books/pagethumb/<string:book>/<int:page>')
+@login_required
+def show_pagethumb(book, page):
+	try:
+		bk = get_book(book)
+		img_file = bk.get_file(page - 1)
+		inio = StringIO.StringIO()
+		outio = StringIO.StringIO()
+		inio.write(img_file)
+		inio.seek(0)
+		
+		im = Image.open(inio)
+		im.thumbnail((64, 64))
+		im.save(outio, "JPEG")
+		outio.seek(0)
+		
+		return send_file(outio, 'image/jpg')
+	except Exeption, err:
+		return jsonify({'err': err.message})
+		abort(404)
+			
 @app.route('/books/download/<string:book>')
 @login_required
 def download_book(book):

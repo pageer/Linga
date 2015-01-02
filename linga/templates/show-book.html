@@ -57,29 +57,39 @@
 			<li><a href="{{url_for('download_book', book=book.rel_path)}}">Download book archive</a></li>
 			<li><a href="{{url_for('show_book_list')}}">Back to book listing</a></li>
 		</ul>
-	</div>
-	<div class="pages">
-		<ul class="page-list">
-			{% for file in book.get_file_list() %}
-			<li>
-				<a class="page-link" title="{{file}}" data-index="{{loop.index}}"
-				   href="{{url_for('show_page', book=book.disp_relpath(), page=loop.index)}}">
-					{{loop.index}}
-				</a>
-			</li>
-			{% endfor%}
-		</ul>
+		<div class="pages">
+			<h5 class="page-list-label">Pages:</h4>
+			<ul class="page-list">
+				{% for file in book.get_file_list() %}
+				<li data-bind="css: { currentPage: pageNumber() == {{loop.index}} }">
+					<a class="page-link" title="{{file}}" data-index="{{loop.index}}"
+					   href="{{url_for('show_page', book=book.disp_relpath(), page=loop.index)}}">
+						<img src="{{url_for('show_pagethumb', book=book.disp_relpath(), page=loop.index)}}" alt=""/>
+						<span>Page {{loop.index}}</span>
+					</a>
+				</li>
+				{% endfor%}
+			</ul>
+		</div>
 	</div>
 	<div class="image-content" data-bind="css: { dualpage: dualPage(),
-												 r_to_l: rightToLeft() }">
+												 rToL: rightToLeft(),
+												 fitWidth: fitMode() == 'width',
+												 fitHeight: fitMode() == 'height',
+												 fullSize: fitMode() == 'full' }">
 		<div class="loading-overlay"></div>
-		<img class="main-image fullSize" data-bind="style: { maxHeight: getFitHeight() },
-													css: { fitWidth: fitMode() == 'width',
-															fullSize: fitMode() == 'full' }"
-			 src="{{url_for('show_page', book=book.disp_relpath(), page=metadata.last_page)}}" alt="">
-		<img class="secondary-image fullSize" data-bind="style: { maxHeight: getFitHeight() },
-		                                                 css: { fitWidth: fitMode() == 'width' }"
-			 src="{{url_for('show_page', book=book.disp_relpath(), page=metadata.last_page + 1)}}" alt="">
+		<!-- A second copy of the secondary image for right-to-left view. -->
+		<img class="left secondary page-image" alt=""
+			 data-bind="style: { maxHeight: getFitHeight() }"
+			 src="{{url_for('show_page', book=book.disp_relpath(), page=metadata.last_page + 1)}}">
+		<!-- Main image for singe-image view. -->
+		<img class="main page-image" alt=""
+			 data-bind="style: { maxHeight: getFitHeight() }"
+			 src="{{url_for('show_page', book=book.disp_relpath(), page=metadata.last_page)}}">
+		<!-- Second image for dual-page view. -->
+		<img class="right secondary page-image" alt=""
+			 data-bind="style: { maxHeight: getFitHeight() }"
+			 src="{{url_for('show_page', book=book.disp_relpath(), page=metadata.last_page + 1)}}">
 		<a href="#" class="big-link prev-link">
 			<span class="top">&lsaquo;</span><span class="bottom">&lsaquo;</span>
 		</a>
