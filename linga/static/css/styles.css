@@ -94,7 +94,12 @@ body.book-page {
 	color: #fff;
 }
 
-.pages .page-list .currentPage {
+.pages .page-list li:hover {
+	background-color: rgba(0, 127, 255, 0.4);
+}
+
+.pages .page-list .currentPage,
+.pages .page-list li.currentPage:hover {
 	background-color: rgba(0, 0, 255, 0.5);
 }
 

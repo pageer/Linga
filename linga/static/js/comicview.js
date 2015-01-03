@@ -28,6 +28,8 @@ function ComicViewModel() {
 		prev_link: '.prev-link',
 		curr_page: '.curr-page',
 		page_cnt: '.total-pages',
+		pager: '.page-list',
+		pager_curr: '.page-list .currentPage',
 		alert: '.dynamic-alert'
 	};
 	
@@ -37,6 +39,7 @@ function ComicViewModel() {
 	this.toggleMetadata = function () {
 		var visible = this.metadataVisible();
 		this.metadataVisible(! visible);
+		$(this.selectors.pager).scrollLeft(this.getPagerScroll());
 	};
 	
 	this.addPages = function (pages) {
@@ -126,6 +129,13 @@ function ComicViewModel() {
 		          parseInt(this.$image_container.css('margin-top'), 10);
 		var height = $(window).height() - this.imageContainerOffset.top - pad;
 		return this.fitMode() === 'height' ? (height + 'px') : 'none';
+	};
+	
+	this.getPagerScroll = function () {
+		var $pager = $(this.selectors.pager),
+			pager_width = $(this.selectors.pager_curr).position().left,
+			curr_scroll = $pager.scrollLeft();
+		return curr_scroll + pager_width - $pager.offset().left;
 	};
 	
 	this.showAlert = function (text, type, delay) {
