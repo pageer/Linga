@@ -5,11 +5,11 @@
 {% macro nav_menu() %}
 <div class="nav-links">
 	<div class="nav-control">
-		<a href="" class="prev-link">&#8656;<span data-bind="text: rightToLeft() ? 'Next' : 'Prev'">Prev</span></a>
+		<a href="{{url_for('show_book', book=book.disp_relpath(), page=page-1)}}" class="prev-link">&#8656;<span data-bind="text: rightToLeft() ? 'Next' : 'Prev'">Prev</span></a>
 		<select class="curr-page" data-bind="options: allPageNumbers(),
 											 value: pageNumber()">
 		</select> of <span class="total-pages" data-bind="text: pageCount()"></span>
-		<a href="" class="next-link"><span data-bind="text: rightToLeft() ? 'Prev' : 'Next'">Next</span>&#8658;</a>
+		<a href="{{url_for('show_book', book=book.disp_relpath(), page=page+1)}}" class="next-link"><span data-bind="text: rightToLeft() ? 'Prev' : 'Next'">Next</span>&#8658;</a>
 		<span class="separator">|</span>
 		<select name="fitmode" class="img-size" data-bind="value: fitMode">
 			{{option('Full Size', 'full')}}
@@ -41,7 +41,7 @@
 
 {% block bodycontent %}
 	<noscript>
-		This page won't work with JavaScript disabled.
+		This page works better with JavaScript enabled.
 	</noscript>
 	<div class="header">
 		<a href="#" class="menu-link" data-bind="click: toggleMetadata">&#9776;</a>
@@ -81,19 +81,19 @@
 		<!-- A second copy of the secondary image for right-to-left view. -->
 		<img class="left secondary page-image" alt=""
 			 data-bind="style: { maxHeight: getFitHeight() }"
-			 src="{{url_for('show_page', book=book.disp_relpath(), page=metadata.last_page + 1)}}">
+			 src="{{url_for('show_page', book=book.disp_relpath(), page=page+1)}}">
 		<!-- Main image for singe-image view. -->
 		<img class="main page-image" alt=""
 			 data-bind="style: { maxHeight: getFitHeight() }"
-			 src="{{url_for('show_page', book=book.disp_relpath(), page=metadata.last_page)}}">
+			 src="{{url_for('show_page', book=book.disp_relpath(), page=page)}}">
 		<!-- Second image for dual-page view. -->
 		<img class="right secondary page-image" alt=""
 			 data-bind="style: { maxHeight: getFitHeight() }"
-			 src="{{url_for('show_page', book=book.disp_relpath(), page=metadata.last_page + 1)}}">
-		<a href="#" class="big-link prev-link">
+			 src="{{url_for('show_page', book=book.disp_relpath(), page=page+1)}}">
+		<a href="{{url_for('show_book', book=book.disp_relpath(), page=page-1)}}" class="big-link prev-link">
 			<span class="top">&lsaquo;</span><span class="bottom">&lsaquo;</span>
 		</a>
-		<a href="#" class="big-link next-link">
+		<a href="{{url_for('show_book', book=book.disp_relpath(), page=page+1)}}" class="big-link next-link">
 			<span class="top">&rsaquo;</span><span class="bottom">&rsaquo;</span>
 		</a>
 	</div>

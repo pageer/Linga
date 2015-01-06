@@ -32,13 +32,20 @@ def show_book_list():
 	return render_template('show-book-list.html',
 						   books=books, recent=recent_metadata)
 
-@app.route('/books/read/<string:book>')
+@app.route('/books/read/<string:book>/page/<int:page>')
+@app.route('/books/read/<string:book>/', defaults = {'page': 0})
 @login_required
-def show_book(book):
+def show_book(book, page):
 	try:
 		bk = get_book(book)
 		meta = bk.metadata(current_user.user_id)
-		return render_template('show-book.html', book=bk, book_id=book, metadata=meta)
+		if page == 0:
+			page = meta.last_page if meta.last_page else 1
+		else:
+			meta.last_page = page
+			db.session.add(meta)
+			db.session.commit()
+		return render_template('show-book.html', book=bk, book_id=book, metadata=meta, page=page)
 	except:
 		abort(404)
 

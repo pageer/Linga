@@ -200,9 +200,7 @@ body.book-page {
 
 /* Container and overlay */
 .image-content {
-	position: absolute;
-	bottom: 0;
-	top: 4em;
+	position: relative;
 	text-align: center;
 	margin: 5px 0;
 	white-space: nowrap;
