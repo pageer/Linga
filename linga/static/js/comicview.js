@@ -233,8 +233,9 @@ function ComicViewModel() {
 		});
 		
 		this.$image.off('load').on('load', function () {
-			$(window).scrollTop(0);
-			$(this).closest(self.selectors.image_container).removeClass('loading');
+			var $img = $(this).closest(self.selectors.image_container);
+			$(window).scrollTop($img.offset().top);
+			$img.removeClass('loading');
 		});
 		this.$sec_image.off('load').on('load', function () {
 			$(this).closest(self.selectors.image_container).removeClass('sec-loading');
