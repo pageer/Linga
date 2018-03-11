@@ -5,11 +5,20 @@
 {% macro nav_menu() %}
 <div class="nav-links">
 	<div class="nav-control">
-		<a href="{{url_for('show_book', book=book.disp_relpath(), page=page-1)}}" class="prev-link">&#8656;<span data-bind="text: rightToLeft() ? 'Next' : 'Prev'">Prev</span></a>
-		<select class="curr-page" data-bind="options: allPageNumbers(),
-											 value: pageNumber()">
+		<a href="{{url_for('show_book', book=book.disp_relpath(), page=page-1)}}"
+           class="prev-link"
+           data-bind="click: pageLeft">
+            &#8656;<span data-bind="text: leftLinkText"></span>
+        </a>
+		<select class="curr-page" data-bind="
+            options: allPageNumbers(),
+            value: pageNumber()">
 		</select> of <span class="total-pages" data-bind="text: pageCount()"></span>
-		<a href="{{url_for('show_book', book=book.disp_relpath(), page=page+1)}}" class="next-link"><span data-bind="text: rightToLeft() ? 'Prev' : 'Next'">Next</span>&#8658;</a>
+		<a href="{{url_for('show_book', book=book.disp_relpath(), page=page+1)}}" 
+           class="next-link"
+           data-bind="click: pageRight">
+            <span data-bind="text: rightLinkText"></span>&#8658;
+        </a>
 		<span class="separator">|</span>
 		<select name="fitmode" class="img-size" data-bind="value: fitMode">
 			{{option('Full Size', 'full')}}

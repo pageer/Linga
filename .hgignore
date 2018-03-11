@@ -3,3 +3,4 @@ syntax: glob
 *.pyc
 books
 tmp.db
+venv

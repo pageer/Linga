@@ -24,8 +24,6 @@ function ComicViewModel() {
 		main_image: '.page-image.main',
 		sec_image: '.page-image.secondary',
 		image_container: '.image-content',
-		next_link: '.next-link',
-		prev_link: '.prev-link',
 		curr_page: '.curr-page',
 		page_cnt: '.total-pages',
 		pager: '.page-list',
@@ -36,6 +34,14 @@ function ComicViewModel() {
 	this.$links = [];
 	this.$image = [];
 	
+    this.leftLinkText = ko.computed(function() {
+        return this.rightToLeft() ? 'Prev' : 'Next';
+    }, this);
+
+    this.rightLinkText = ko.computed(function() {
+        return this.rightToLeft() ? 'Next' : 'Prev';
+    }, this);
+
 	this.toggleMetadata = function () {
 		var visible = this.metadataVisible();
 		this.metadataVisible(! visible);
@@ -211,14 +217,6 @@ function ComicViewModel() {
 			}
 		});
 		
-		$base.find(this.selectors.next_link).off('click').on('click', function () {
-			self.pageRight();
-			return false;
-		});
-		$base.find(this.selectors.prev_link).off('click').on('click', function () {
-			self.pageLeft();
-			return false;
-		});
 		$base.find(this.selectors.curr_page).off('change').on('change', function () {
 			self.goToPage(parseInt($(this).val(), 10));
 		});

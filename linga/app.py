@@ -1,13 +1,15 @@
 import os.path
 from flask import Flask, request, session, g
-from flask.ext.sqlalchemy import SQLAlchemy
-from flask.ext.login import LoginManager, _create_identifier
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager #, _create_identifier
 
 BOOK_PATH = os.path.normpath(os.path.join(os.path.dirname(__file__), '..', 'books'))
 # Make sure to add your own secret key in config.py
 SECRET_KEY = "s\xe4\xeb\x9a\xb2\xb4\xd6\xa5-\xca0M'7\xd3\x10oeB\xa1\x11?Yt"
 # Environment variable for config file name
 ENV_KEY = 'LINGA_CONFIG_FILE'
+
+SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 app = Flask(__name__)
 app.config.from_object(__name__)

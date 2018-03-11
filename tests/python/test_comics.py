@@ -402,12 +402,12 @@ class TestComicMetadata(unittest.TestCase):
 	def test_should_get_base_path_as_name(self):
 		c = ComicMetadata()
 		c.book_relpath = 'foo/bar/baz.cbz'
-		self.assertEquals(c.book_name(), 'baz.cbz')
+		self.assertEquals('baz', c.book_name())
 	
 	def test_should_escape_relpath(self):
-		c.ComicMetadata()
-		c.book_relpath = 'foo/bar/baz.cbz'
-		self.assertEquals(c.disp_relpath(), 'foo--bar--baz.cbz')
+		c = ComicMetadata()
+		c.book_relpath = os.path.join('foo', 'bar', 'baz.cbz')
+		self.assertEquals('foo--bar--baz.cbz', c.disp_relpath() )
 	
 	
 if __name__ == '__main__':

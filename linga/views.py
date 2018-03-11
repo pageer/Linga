@@ -4,7 +4,7 @@ from datetime import datetime
 from PIL import Image
 from flask import (render_template, make_response, redirect, abort, url_for,
 				   send_file, flash, request, session, jsonify, g)
-from flask.ext.login import (login_required, login_user, logout_user, current_user)
+from flask_login import (login_required, login_user, logout_user, current_user)
 
 from linga import User, app, db, user_query
 from linga.comics import (ComicLister, Comic, ComicMetadata, comic_query,

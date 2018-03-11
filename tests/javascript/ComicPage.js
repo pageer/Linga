@@ -210,9 +210,11 @@ describe("A comic book", function() {
 	});
 	
 	describe("when dual-page mode is enabled", function() {
-		this.book.addPages(this.test_pages);
-		spyOn(this.book, 'setPageInDom');
-		spyOn(this.book, 'updatePage');
+        beforeEach(function() {
+            this.book.addPages(this.test_pages);
+            spyOn(this.book, 'setPageInDom');
+            spyOn(this.book, 'updatePage');
+        });
 	});
 	
 	it("should report all page numbers starting from one", function() {
