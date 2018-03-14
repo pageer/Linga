@@ -1,7 +1,7 @@
 import os.path
 from flask import Flask, request, session, g
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager #, _create_identifier
+from flask_login import LoginManager
 
 BOOK_PATH = os.path.normpath(os.path.join(os.path.dirname(__file__), '..', 'books'))
 # Make sure to add your own secret key in config.py
