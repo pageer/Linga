@@ -4,6 +4,7 @@ import os.path
 import zipfile
 import rarfile
 from datetime import datetime
+from flask import url_for
 
 from app import (get_app, get_config, get_db, db)
 
@@ -122,6 +123,21 @@ class Comic:
                     self.file_list.append(f)
             self.file_list.sort()
         return self.file_list
+
+    def get_page_list(self):
+        files = self.get_file_list()
+        pages = []
+        index = 1
+        for f in files:
+            pages.append({
+                "file": f,
+                "index": index,
+                "url": url_for('show_page', book=self.disp_relpath(), page=index),
+                "thumb_url": url_for('show_pagethumb', book=self.disp_relpath(), page=index),
+            })
+            index += 1
+        return pages
+
     
     def next_file(self):
         return self.get_file(self.current_file_index + 1)

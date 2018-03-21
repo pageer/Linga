@@ -1,8 +1,17 @@
 /*globals ko, SCRIPT_ROOT */
-function ComicPage(url, name, index) {
-	this.url = url;
-	this.name = name;
-	this.index = index;
+function ComicPage(page, parent) {
+	this.url = page.url;
+    this.thumb_url = page.thumb_url;
+	this.name = page.name;
+	this.index = page.index;
+
+    this.isCurrentPage = ko.computed(function() {
+        return this == parent.currentPage();
+    }, this);
+
+    this.goToPage = function() {
+        parent.goToPage(this.index);
+    };
 }
 
 function ComicViewModel() {
@@ -14,32 +23,28 @@ function ComicViewModel() {
 	this.fitMode = ko.observable('full');
 	this.rightToLeft = ko.observable(false);
 	this.dualPage = ko.observable(false);
-	this.relpath = '';
+    this.lastPageRead = ko.observable(1);
+	this.relpath = ko.observable('');
 	
 	this.selectors = {
 		page_link: '.page-link',
-		book_name: '.book-name',
-		book_path: '.book-filepath',
-		book_page: '.book-last-page',
 		main_image: '.page-image.main',
 		sec_image: '.page-image.secondary',
 		image_container: '.image-content',
 		curr_page: '.curr-page',
-		page_cnt: '.total-pages',
 		pager: '.page-list',
 		pager_curr: '.page-list .currentPage',
 		alert: '.dynamic-alert'
 	};
 	
-	this.$links = [];
 	this.$image = [];
 	
     this.leftLinkText = ko.computed(function() {
-        return this.rightToLeft() ? 'Prev' : 'Next';
+        return this.rightToLeft() ? 'Next' : 'Prev';
     }, this);
 
     this.rightLinkText = ko.computed(function() {
-        return this.rightToLeft() ? 'Next' : 'Prev';
+        return this.rightToLeft() ? 'Prev' : 'Next';
     }, this);
 
 	this.toggleMetadata = function () {
@@ -48,14 +53,14 @@ function ComicViewModel() {
 		$(this.selectors.pager).scrollLeft(this.getPagerScroll());
 	};
 	
-	this.addPages = function (pages) {
-		for (var i = 0; i < pages.length; i++) {
-			this.pages.push(pages[i]);
-		}
+	this.addPage = function(page) {
+		this.pages.push(new ComicPage(page, this));
 	};
 	
-	this.addPage = function (page) {
-		this.pages.push(page);
+	this.addPages = function(pages) {
+		for (var i = 0; i < pages.length; i++) {
+			this.addPage(pages[i]);
+		}
 	};
 	
 	this.allPageNumbers = ko.computed(function () {
@@ -116,7 +121,7 @@ function ComicViewModel() {
 		$.post(
 			SCRIPT_ROOT + '/book/update/page',
 			{
-				relpath: this.relpath,
+				relpath: this.relpath(),
 				page: this.pageNumber(),
 				finished: this.pageCount() >= this.pageNumber(),
 				fitmode: this.fitMode(),
@@ -162,33 +167,26 @@ function ComicViewModel() {
 	
 	this.getDataFromDom = function () {
 		var self = this;
-		this.name(this.getBaseNode().find(this.selectors.book_name).text());
-		this.relpath = this.getBaseNode().find(this.selectors.book_path).text();
+        this.name(window.pageData.bookName);
+        this.relpath(window.pageData.path);
 		this.rightToLeft(this.getBaseNode().find('input[name=rtol]').prop('checked'));
 		this.dualPage(this.getBaseNode().find('input[name=dualpage]').prop('checked'));
 		this.fitMode(this.getBaseNode().find('select[name=fitmode]>option:checked').val());
+        this.lastPageRead(window.pageData.lastPage);
 		
-		this.$links.each(function () {
-			var $this = $(this),
-				index = parseInt($this.attr("data-index"), 10);
-			self.pages.push(new ComicPage($this.attr('href'), $this.text(), index));
-		});
+        self.addPages(window.pageData.pages);
 	};
 	
 	this.setPageInDom = function () {
-		var $curr_link = this.$links.eq(this.pageNumber() - 1);
-		if (this.$image.attr('src') !== $curr_link.attr('href')) {
+		if (this.$image.attr('src') !== this.currentPage().url) {
 			this.$image.closest(this.selectors.image_container).addClass('loading');
-			this.$image.attr('src', $curr_link.attr('href'));
+			this.$image.attr('src', this.currentPage().url);
 			
-			var $sec_link = this.$links.eq(this.pageNumber());
-			this.$sec_image.attr('src', $sec_link.attr('href'));
+            var next_page = this.pages()[this.pageNumber()];
+			this.$sec_image.attr('src', next_page.url);
 			if (this.dualPage()) {
 				this.$sec_image.closest(this.selectors.image_container).addClass('sec-loading');
 			}
-			
-			this.$links.removeClass('current-img');
-			$curr_link.addClass('current-img');
 		}
 	};
 	
@@ -198,7 +196,6 @@ function ComicViewModel() {
 	
 	this.setDomNodes = function () {
 		var $base = this.getBaseNode();
-		this.$links = $base.find(this.selectors.page_link);
 		this.$image = $base.find(this.selectors.main_image);
 		this.$sec_image = $base.find(this.selectors.sec_image);
 		this.$image_container = $base.find(this.selectors.image_container);
@@ -224,17 +221,12 @@ function ComicViewModel() {
 			$base.find('.show-hover').removeClass('show-hover');
 		});
 		
-		this.$links.off('click').on('click', function () {
-			var index = parseInt($(this).attr('data-index'), 10);
-			self.goToPage(index);
-			return false;
-		});
-		
 		this.$image.off('load').on('load', function () {
 			var $img = $(this).closest(self.selectors.image_container);
 			$(window).scrollTop($img.offset().top);
 			$img.removeClass('loading');
 		});
+
 		this.$sec_image.off('load').on('load', function () {
 			$(this).closest(self.selectors.image_container).removeClass('sec-loading');
 		});
@@ -269,10 +261,10 @@ function ComicViewModel() {
 
 $(document).ready(function () {
 	var page = new ComicViewModel();
+    window.comicView = page;
 	page.setDomNodes();
 	page.getDataFromDom();
 	ko.applyBindings(page);
 	page.initEvents();
-	var last_page = parseInt(page.getBaseNode().find(page.selectors.book_page).text(), 10);
-	page.goToPage(last_page, true);
+	page.goToPage(page.lastPageRead(), true);
 });

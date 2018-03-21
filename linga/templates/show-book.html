@@ -39,6 +39,15 @@
 
 {% block pagetitle %}{{book.name}}{% endblock %}
 
+{% block jsdata %}
+    window.pageData = {
+        bookName: '{{book.name}}',
+        path: '{{book.rel_path}}',
+        pages: {{book.get_page_list() | tojson}},
+        lastPage: {{metadata.last_page}}
+    };
+{% endblock %}
+
 {% block headscripts %}
 	<script src="{{url_for('static', filename='js/jquery.touchSwipe.min.js')}}"></script>
 	<script src="{{url_for('static', filename='js/comicview.js')}}"></script>
@@ -58,34 +67,44 @@
 	</div>
 	<div class="metadata" data-bind="css: {shown: metadataVisible}">
 		<a href="#" class="close-button" data-bind="click: toggleMetadata">&times;</a>
-		<h3 class="book-name">{{book.name}}</h3>
+		<h3 class="book-name" data-bind="text: name"></h3>
 		<p>File: <span class="book-filepath">{{book.rel_path}}</span></p>
 		<p>Last accessed: {{metadata.last_access_date()}}</p>
-		<p>Last page read: <span class="book-last-page">{{metadata.last_page}}</span></p>
+		<p>Last page read: <span data-bind="text: lastPageRead"></span></p>
 		<ul class="book-actions">
 			<li><a href="{{url_for('download_book', book=book.rel_path)}}">Download book archive</a></li>
 			<li><a href="{{url_for('show_book_list')}}">Back to book listing</a></li>
 		</ul>
 		<div class="pages">
-			<h5 class="page-list-label">Pages:</h4>
-			<ul class="page-list">
-				{% for file in book.get_file_list() %}
-				<li data-bind="css: { currentPage: pageNumber() == {{loop.index}} }">
-					<a class="page-link" title="{{file}}" data-index="{{loop.index}}"
-					   href="{{url_for('show_page', book=book.disp_relpath(), page=loop.index)}}">
-						<img src="{{url_for('show_pagethumb', book=book.disp_relpath(), page=loop.index)}}" alt=""/>
-						<span>{{loop.index}}</span>
+			<h5 class="page-list-label">Pages:</h5>
+			<ul class="page-list" data-bind="foreach: pages">
+				<li data-bind="css: { 
+                    currentPage: isCurrentPage,
+                    'current-img': isCurrentPage
+                }">
+                    <a class="page-link" data-bind="
+                        attr: {
+                            title: name,
+                            href: url
+                        },
+                        click: goToPage
+                    ">
+                        <img alt="" data-bind="attr: { src: thumb_url }" />
+						<span data-bind="text: index"></span>
 					</a>
 				</li>
-				{% endfor%}
 			</ul>
 		</div>
 	</div>
-	<div class="image-content" data-bind="css: { dualpage: dualPage(),
-												 rToL: rightToLeft(),
-												 fitWidth: fitMode() == 'width',
-												 fitHeight: fitMode() == 'height',
-												 fullSize: fitMode() == 'full' }">
+	<div class="image-content" data-bind="
+        css: {
+            dualpage: dualPage(),
+            rToL: rightToLeft(),
+            fitWidth: fitMode() == 'width',
+            fitHeight: fitMode() == 'height',
+            fullSize: fitMode() == 'full' 
+        }
+    ">
 		<div class="loading-overlay"></div>
 		<!-- A second copy of the secondary image for right-to-left view. -->
 		<img class="left secondary page-image" alt=""
@@ -99,11 +118,17 @@
 		<img class="right secondary page-image" alt=""
 			 data-bind="style: { maxHeight: getFitHeight() }"
 			 src="{{url_for('show_page', book=book.disp_relpath(), page=page+1)}}">
-		<a href="{{url_for('show_book', book=book.disp_relpath(), page=page-1)}}" class="big-link prev-link">
-			<span class="top">&lsaquo;</span><span class="bottom">&lsaquo;</span>
+		<a href="{{url_for('show_book', book=book.disp_relpath(), page=page-1)}}"
+           class="big-link prev-link"
+           data-bind="click: pageLeft">
+			<span class="top">&lsaquo;</span>
+            <span class="bottom">&lsaquo;</span>
 		</a>
-		<a href="{{url_for('show_book', book=book.disp_relpath(), page=page+1)}}" class="big-link next-link">
-			<span class="top">&rsaquo;</span><span class="bottom">&rsaquo;</span>
+		<a href="{{url_for('show_book', book=book.disp_relpath(), page=page+1)}}"
+           class="big-link next-link"
+           data-bind="click: pageRight">
+			<span class="top">&rsaquo;</span>
+            <span class="bottom">&rsaquo;</span>
 		</a>
 	</div>
 	<div class="dynamic-alert alert-error alert">

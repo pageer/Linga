@@ -1,12 +1,11 @@
-REQUIREMENTS
+INSTALLATION
 ============
-Linga requires Python 2.7 and the following packages, availbe via pip:
-- flask
-- SQLAlchemy
-- flask-sqlalchemy
-- flask-login
-- rarfile
-- pillow
+To install Linga, you'll need:
+ - Python >= 2.7
+ - pip
+
+To install the Python dependencies, run:
+   pip install -r requirements.txt
 
 THIRD-PARTY PACKAGES
 ====================
