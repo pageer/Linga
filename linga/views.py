@@ -153,6 +153,7 @@ def update_page():
     finished = request.form.get('finished') == 'true'
     fit_mode = request.form.get('fitmode') or "full"
     rtol = request.form.get('rtl') == 'true'
+    dual = request.form.get('dual') == 'true'
     
     if path and uid and page:
         data = comic_query().filter_by(user_id=uid, book_relpath=path).first()
@@ -162,6 +163,7 @@ def update_page():
         data.last_page = page
         data.fit_mode = fit_mode
         data.right_to_left = rtol
+        data.dual_page = dual
         if finished:
             data.finished_book = True
         try:
@@ -171,3 +173,4 @@ def update_page():
         except Exception as err:
             return jsonify({'success': False, 'error': err.message})
     return jsonify({'success': False, 'error': 'Missing data'})
+

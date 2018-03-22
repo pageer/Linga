@@ -236,6 +236,7 @@ class ComicMetadata(db.Model):
     finished_book = db.Column(db.Boolean, nullable=False, default=False)
     fit_mode = db.Column(db.String(length=10), nullable=False, default="full")
     right_to_left = db.Column(db.Boolean, nullable=False, default=False)
+    dual_page = db.Column(db.Boolean, nullable=False, default=False)
     
     def __init__(self, userid=None, bookpath=None):
         self.user_id = userid
@@ -245,6 +246,7 @@ class ComicMetadata(db.Model):
         self.finished_book = False
         self.fit_mode = "full"
         self.right_to_left = False
+        self.dual_page = False
     
     def book_name(self):
         return filename_to_bookname(self.book_relpath)
