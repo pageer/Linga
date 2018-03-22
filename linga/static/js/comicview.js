@@ -89,6 +89,21 @@ function ComicViewModel() {
 			}
 		}
 	};
+
+    this.nextPageRight = ko.computed(function() {
+		var curr_page = this.pageNumber();
+        var offset = (this.dualPage() ? 2 : 1);
+		var next_page = curr_page + 0;
+        next_page = Math.min(next_page, this.pageCount());
+        return this.pages()[next_page];
+    }, this);
+
+    this.nextPageLeft = ko.computed(function() {
+		var curr_page = this.pageNumber();
+		var next_page = curr_page - (this.dualPage() ? 2 : 1);
+        next_page = Math.max(1, next_page);
+        return this.pages()[next_page];
+    }, this);
 	
 	this.goToNext = function () {
 		var curr_page = this.pageNumber();
@@ -99,7 +114,27 @@ function ComicViewModel() {
 		var curr_page = this.pageNumber();
 		this.goToPage(curr_page - (this.dualPage() ? 2 : 1));
 	};
+
+    this.pageLeftUrl = ko.computed(function() {
+        return '';
+        var curr_page = this.pageNumber();
+        if (curr_page == this.pageCount()) {
+            return this.pages()[curr_page - 1].url;
+        } else {
+            return (this.currentPage() || {url: ''}).url;
+        }
+    }, this);
 	
+    this.pageRightUrl = ko.computed(function() {
+        return '';
+        var curr_page = this.pageNumber();
+        if (curr_page == 1) {
+            return this.pages()[0].url;
+        } else {
+            return this.currentPage().url;
+        }
+    }, this);
+
 	this.pageRight = function () {
 		if (this.rightToLeft()) {
 			this.goToPrev();
@@ -125,7 +160,8 @@ function ComicViewModel() {
 				page: this.pageNumber(),
 				finished: this.pageCount() >= this.pageNumber(),
 				fitmode: this.fitMode(),
-				rtl: this.rightToLeft()
+				rtl: this.rightToLeft(),
+                dual: this.dualPage()
 			},
 			function (data) {
 				if (! data.success) {
@@ -165,16 +201,15 @@ function ComicViewModel() {
 		}
 	};
 	
-	this.getDataFromDom = function () {
-		var self = this;
-        this.name(window.pageData.bookName);
-        this.relpath(window.pageData.path);
-		this.rightToLeft(this.getBaseNode().find('input[name=rtol]').prop('checked'));
-		this.dualPage(this.getBaseNode().find('input[name=dualpage]').prop('checked'));
-		this.fitMode(this.getBaseNode().find('select[name=fitmode]>option:checked').val());
-        this.lastPageRead(window.pageData.lastPage);
+	this.populateData = function(pageData) {
+        this.name(pageData.bookName);
+        this.relpath(pageData.path);
+		this.rightToLeft(pageData.rToL);
+		this.dualPage(pageData.dualPage);
+		this.fitMode(pageData.fitMode);
+        this.lastPageRead(pageData.lastPage);
 		
-        self.addPages(window.pageData.pages);
+        this.addPages(pageData.pages);
 	};
 	
 	this.setPageInDom = function () {
@@ -258,13 +293,3 @@ function ComicViewModel() {
 	
 }
 
-
-$(document).ready(function () {
-	var page = new ComicViewModel();
-    window.comicView = page;
-	page.setDomNodes();
-	page.getDataFromDom();
-	ko.applyBindings(page);
-	page.initEvents();
-	page.goToPage(page.lastPageRead(), true);
-});
