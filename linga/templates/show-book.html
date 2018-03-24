@@ -2,21 +2,24 @@
 {% macro option(label, val)%}
 <option value="{{val}}" {% if metadata.fit_mode == val%}selected="selected"{% endif%}>{{label}}</option>
 {% endmacro %}
+
 {% macro nav_menu() %}
 <div class="nav-links">
 	<div class="nav-control">
 		<a href="{{url_for('show_book', book=book.disp_relpath(), page=page-1)}}"
            class="prev-link"
-           data-bind="click: pageLeft, attr: { href: pageLeftUrl }">
+           data-bind="click: pageLeft, attr: { href: nextPageLeft().url }">
             &#8656;<span data-bind="text: leftLinkText"></span>
         </a>
 		<select class="curr-page" data-bind="
-            options: allPageNumbers(),
-            value: pageNumber()">
+            options: pages,
+            optionsText: 'index',
+            optionsValue: 'index',
+            value: pageNumber">
 		</select> of <span class="total-pages" data-bind="text: pageCount()"></span>
 		<a href="{{url_for('show_book', book=book.disp_relpath(), page=page+1)}}" 
            class="next-link"
-           data-bind="click: pageRight, attr: { href: pageRightUrl }">
+           data-bind="click: pageRight, attr: { href: nextPageRight().url }">
             <span data-bind="text: rightLinkText"></span>&#8658;
         </a>
 		<span class="separator">|</span>

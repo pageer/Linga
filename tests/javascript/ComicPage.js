@@ -97,13 +97,6 @@ describe("A comic book", function() {
         });
 	});
 	
-	it("should report all page numbers starting from one", function() {
-		this.book.addPages(this.test_pages);
-		
-		expect(this.book.allPageNumbers()[0]).toEqual(1);
-		expect(this.book.allPageNumbers().length).toEqual(3);
-	});
-	
 	it("should ignore navigation to before first page", function() {
 		spyOn(this.book, 'updatePage');
         spyOn(this.book, 'setPageInDom');
@@ -156,54 +149,184 @@ describe("A comic book", function() {
 		expect(this.book.fitMode()).toEqual('full');
 	});
 	
-	it("should go to next page on right navigation", function() {
-		spyOn(this.book, 'updatePage');
-        spyOn(this.book, 'setPageInDom');
-		this.book.addPages(this.test_pages);
-		
-		this.book.goToPage(2);
-		this.book.pageRight();
-		
-		expect(this.book.pageNumber()).toBe(3);
-	});
-	
-	it("should go to previous page on left navigation", function() {
-		spyOn(this.book, 'updatePage');
-        spyOn(this.book, 'setPageInDom');
-		this.book.addPages(this.test_pages);
-		
-		this.book.goToPage(2);
-		this.book.pageLeft();
-		
-		expect(this.book.pageNumber()).toBe(1);
-	});
-	
 	it("should navigate left-to-right by default", function() {
 		expect(this.book.rightToLeft()).toBe(false);
 	});
-	
-	describe("when right-to-left navigation is enabled", function() {
-		beforeEach(function() {
-			spyOn(this.book, 'updatePage');
-            spyOn(this.book, 'setPageInDom');
-			this.book.rightToLeft(true);
-			this.book.addPages(this.test_pages);
-			this.book.goToPage(2);
-		});
-		
-		it("should go to next page on left navigation", function() {
-			this.book.pageLeft();
-			
-			expect(this.book.pageNumber()).toBe(3);
-		});
-		
-		it("should go to previous page on right navigation", function() {
-			this.book.pageRight();
-			
-			expect(this.book.pageNumber()).toBe(1);
-		});
-	});
-	
+
+    describe("when getting page to left", function() {
+        beforeEach(function() {
+            this.test_pages = [
+                {url: 'link1', thumb_url: 'thumb1', name: 'page1', index: 1},
+                {url: 'link2', thumb_url: 'thumb2', name: 'page2', index: 2},
+                {url: 'link3', thumb_url: 'thumb3', name: 'page3', index: 3},
+                {url: 'link4', thumb_url: 'thumb4', name: 'page4', index: 4},
+                {url: 'link5', thumb_url: 'thumb5', name: 'page5', index: 5},
+                {url: 'link6', thumb_url: 'thumb6', name: 'page6', index: 6},
+                {url: 'link7', thumb_url: 'thumb7', name: 'page7', index: 7},
+            ];
+            this.book.addPages(this.test_pages);
+        });
+
+        it("should get page 2 when starting at page 3", function () {
+            this.book.pageNumber(3);
+
+            var page = this.book.nextPageLeft();
+
+            expect(page.name).toEqual('page2');
+        });
+
+        it("should get page 1 when starting at page 1", function () {
+            this.book.pageNumber(1);
+
+            var page = this.book.nextPageLeft();
+
+            expect(page.name).toEqual('page1');
+        });
+
+        it("should get page 1 when starting at page 3 and dual page enabled", function () {
+            this.book.pageNumber(3);
+            this.book.dualPage(true);
+
+            var page = this.book.nextPageLeft();
+
+            expect(page.name).toEqual('page1');
+        });
+
+        it("should get page 1 when starting at page 2 and dual page enabled", function () {
+            this.book.pageNumber(2);
+            this.book.dualPage(true);
+
+            var page = this.book.nextPageLeft();
+
+            expect(page.name).toEqual('page1');
+        });
+
+        it("should get page 4 when starting at page 3 and right-to-left enabled", function () {
+            this.book.pageNumber(3);
+            this.book.rightToLeft(true);
+
+            var page = this.book.nextPageLeft();
+
+            expect(page.name).toEqual('page4');
+        });
+
+        it("should get page 7 when starting at page 7 and right-to-left enabled", function () {
+            this.book.pageNumber(7);
+            this.book.rightToLeft(true);
+
+            var page = this.book.nextPageLeft();
+
+            expect(page.name).toEqual('page7');
+        });
+
+        it("should get page 5 when starting at page 3 and dual-page and right-to-left enabled", function () {
+            this.book.pageNumber(3);
+            this.book.rightToLeft(true);
+            this.book.dualPage(true);
+
+            var page = this.book.nextPageLeft();
+
+            expect(page.name).toEqual('page5');
+        });
+
+        it("should get page 6 when starting at page 7 and dual-page and right-to-left enabled", function () {
+            this.book.pageNumber(6);
+            this.book.rightToLeft(true);
+            this.book.dualPage(true);
+
+            var page = this.book.nextPageLeft();
+
+            expect(page.name).toEqual('page7');
+        });
+    });
+
+    describe("when getting page to right", function() {
+        beforeEach(function() {
+            this.test_pages = [
+                {url: 'link1', thumb_url: 'thumb1', name: 'page1', index: 1},
+                {url: 'link2', thumb_url: 'thumb2', name: 'page2', index: 2},
+                {url: 'link3', thumb_url: 'thumb3', name: 'page3', index: 3},
+                {url: 'link4', thumb_url: 'thumb4', name: 'page4', index: 4},
+                {url: 'link5', thumb_url: 'thumb5', name: 'page5', index: 5},
+                {url: 'link6', thumb_url: 'thumb6', name: 'page6', index: 6},
+                {url: 'link7', thumb_url: 'thumb7', name: 'page7', index: 7},
+            ];
+            this.book.addPages(this.test_pages);
+        });
+
+        it("should get page 4 when on page 3", function() {
+            this.book.pageNumber(3);
+
+            var page = this.book.nextPageRight();
+
+            expect(page.name).toEqual('page4');
+        });
+
+        it("should get page 7 when on page 7", function() {
+            this.book.pageNumber(7);
+
+            var page = this.book.nextPageRight();
+
+            expect(page.name).toEqual('page7');
+        });
+
+        it("should get page 5 when on page 3 and dual-page enabled", function() {
+            this.book.pageNumber(3);
+            this.book.dualPage(true);
+
+            var page = this.book.nextPageRight();
+
+            expect(page.name).toEqual('page5');
+        });
+
+        it("should get page 7 when on page 6 and dual-page enabled", function() {
+            this.book.pageNumber(6);
+            this.book.dualPage(true);
+
+            var page = this.book.nextPageRight();
+
+            expect(page.name).toEqual('page7');
+        });
+
+        it("should get page 2 when on page 3 and right-to-left enabled", function() {
+            this.book.pageNumber(3);
+            this.book.rightToLeft(true);
+
+            var page = this.book.nextPageRight();
+
+            expect(page.name).toEqual('page2');
+        });
+
+        it("should get page 1 when on page 1 and right-to-left enabled", function() {
+            this.book.pageNumber(1);
+            this.book.rightToLeft(true);
+
+            var page = this.book.nextPageRight();
+
+            expect(page.name).toEqual('page1');
+        });
+
+        it("should get page 2 when on page 4 and dual-page and right-to-left enabled", function() {
+            this.book.pageNumber(4);
+            this.book.rightToLeft(true);
+            this.book.dualPage(true);
+
+            var page = this.book.nextPageRight();
+
+            expect(page.name).toEqual('page2');
+        });
+
+        it("should get page 1 when on page 2 and dualpage and right-to-left enabled", function() {
+            this.book.pageNumber(2);
+            this.book.rightToLeft(true);
+
+            var page = this.book.nextPageRight();
+
+            expect(page.name).toEqual('page1');
+        });
+    });
+
+
 	xit("should ignore DOM change if image is already the one requested", function() {
 		spyOn(this.book, 'updatePage');
 		this.book.addPages(this.test_pages);

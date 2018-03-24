@@ -54,6 +54,7 @@ function ComicViewModel() {
 	};
 	
 	this.addPage = function(page) {
+        page.index = this.pageCount() + 1;
 		this.pages.push(new ComicPage(page, this));
 	};
 	
@@ -62,14 +63,6 @@ function ComicViewModel() {
 			this.addPage(pages[i]);
 		}
 	};
-	
-	this.allPageNumbers = ko.computed(function () {
-		var ret = [];
-		for (var i = 0; i < this.pages().length; i++) {
-			ret.push(i + 1);
-		}
-		return ret;
-	}, this);
 	
 	this.pageCount = ko.computed(function () {
 		return this.pages().length;
@@ -90,21 +83,26 @@ function ComicViewModel() {
 		}
 	};
 
-    this.nextPageRight = ko.computed(function() {
-		var curr_page = this.pageNumber();
-        var offset = (this.dualPage() ? 2 : 1);
-		var next_page = curr_page + 0;
-        next_page = Math.min(next_page, this.pageCount());
-        return this.pages()[next_page];
-    }, this);
-
     this.nextPageLeft = ko.computed(function() {
-		var curr_page = this.pageNumber();
-		var next_page = curr_page - (this.dualPage() ? 2 : 1);
-        next_page = Math.max(1, next_page);
-        return this.pages()[next_page];
+		var curr_index = this.pageNumber() - 1;
+        var offset = this.dualPage() ? 2 : 1;
+        var next_index = Math.max(0, curr_index - offset);
+        if (this.rightToLeft()) {
+            next_index = Math.min(this.pageCount() - 1, curr_index + offset);
+        }
+        return this.pages()[next_index];
     }, this);
 	
+    this.nextPageRight = ko.computed(function() {
+		var curr_index = this.pageNumber() - 1;
+        var offset = this.dualPage() ? 2 : 1;
+        var next_index = Math.min(this.pageCount() - 1, curr_index + offset);
+        if (this.rightToLeft()) {
+            next_index = Math.max(0, curr_index - offset);
+        }
+        return this.pages()[next_index];
+    }, this);
+
 	this.goToNext = function () {
 		var curr_page = this.pageNumber();
 		this.goToPage(curr_page + (this.dualPage() ? 2 : 1));
@@ -115,40 +113,14 @@ function ComicViewModel() {
 		this.goToPage(curr_page - (this.dualPage() ? 2 : 1));
 	};
 
-    this.pageLeftUrl = ko.computed(function() {
-        return '';
-        var curr_page = this.pageNumber();
-        if (curr_page == this.pageCount()) {
-            return this.pages()[curr_page - 1].url;
-        } else {
-            return (this.currentPage() || {url: ''}).url;
-        }
-    }, this);
-	
-    this.pageRightUrl = ko.computed(function() {
-        return '';
-        var curr_page = this.pageNumber();
-        if (curr_page == 1) {
-            return this.pages()[0].url;
-        } else {
-            return this.currentPage().url;
-        }
-    }, this);
-
 	this.pageRight = function () {
-		if (this.rightToLeft()) {
-			this.goToPrev();
-		} else {
-			this.goToNext();
-		}
+        var page = this.nextPageRight();
+        page.goToPage();
 	};
 	
 	this.pageLeft = function () {
-		if (this.rightToLeft()) {
-			this.goToNext();
-		} else {
-			this.goToPrev();
-		}
+        var page = nextPageLeft();
+        page.goToPage();
 	};
 	
 	this.updatePage = function () {
