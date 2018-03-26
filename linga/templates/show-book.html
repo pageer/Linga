@@ -5,38 +5,38 @@
 
 {% macro nav_menu() %}
 <div class="nav-links">
-	<div class="nav-control">
-		<a href="{{url_for('show_book', book=book.disp_relpath(), page=page-1)}}"
+    <div class="nav-control">
+        <a href="{{url_for('show_book', book=book.disp_relpath(), page=page-1)}}"
            class="prev-link"
            data-bind="click: pageLeft, attr: { href: nextPageLeft().page_url }">
             &#8656;<span data-bind="text: leftLinkText"></span>
         </a>
-		<select class="curr-page" data-bind="
+        <select class="curr-page" data-bind="
             options: pages,
             optionsText: 'index',
             optionsValue: 'index',
             value: pageNumber">
-		</select> of <span class="total-pages" data-bind="text: pageCount()"></span>
-		<a href="{{url_for('show_book', book=book.disp_relpath(), page=page+1)}}" 
+        </select> of <span class="total-pages" data-bind="text: pageCount()"></span>
+        <a href="{{url_for('show_book', book=book.disp_relpath(), page=page+1)}}" 
            class="next-link"
            data-bind="click: pageRight, attr: { href: nextPageRight().page_url }">
             <span data-bind="text: rightLinkText"></span>&#8658;
         </a>
-		<span class="separator">|</span>
-		<select name="fitmode" class="img-size" data-bind="value: fitMode">
-			{{option('Full Size', 'full')}}
-			{{option('Fit Height', 'height')}}
-			{{option('Fit Width', 'width')}}
-		</select>
+        <span class="separator">|</span>
+        <select name="fitmode" class="img-size" data-bind="value: fitMode">
+            {{option('Full Size', 'full')}}
+            {{option('Fit Height', 'height')}}
+            {{option('Fit Width', 'width')}}
+        </select>
         <label title="Right-to-left reading">
-			<input name="rtol" type="checkbox" value="1" data-bind="checked: rightToLeft">
-			L &#8592; R
-		</label>
-		<label title="Display two pages at a time">
-			<input name="dualpage" type="checkbox" value="1" data-bind="checked: dualPage">
-			2-Page
-		</label>
-	</div>
+            <input name="rtol" type="checkbox" value="1" data-bind="checked: rightToLeft">
+            L &#8592; R
+        </label>
+        <label title="Display two pages at a time">
+            <input name="dualpage" type="checkbox" value="1" data-bind="checked: dualPage">
+            2-Page
+        </label>
+    </div>
 </div>
 {% endmacro %}
 
@@ -55,8 +55,8 @@
 {% endblock %}
 
 {% block headscripts %}
-	<script src="{{url_for('static', filename='js/jquery.touchSwipe.min.js')}}"></script>
-	<script src="{{url_for('static', filename='js/comicview.js')}}"></script>
+    <script src="{{url_for('static', filename='js/jquery.touchSwipe.min.js')}}"></script>
+    <script src="{{url_for('static', filename='js/comicview.js')}}"></script>
 
     <script>
         $(document).ready(function () {
@@ -76,30 +76,30 @@
 {% block bodyattrs %}class="book-page"{% endblock %}
 
 {% block bodycontent %}
-	<noscript>
-		This page works better with JavaScript enabled.
-	</noscript>
+    <noscript>
+        This page works better with JavaScript enabled.
+    </noscript>
     <div class="header" data-bind="css: { 'show-hover': showAllUi }">
-		<a href="#" class="menu-link" data-bind="
+        <a href="#" class="menu-link" data-bind="
             click: toggleMetadata,
             visible: !metadataVisible()
         ">&#9776;</a>
-		{{nav_menu()}}
-	</div>
-	<div class="metadata" data-bind="css: {shown: metadataVisible}">
-		<a href="#" class="close-button" data-bind="click: toggleMetadata">&times;</a>
-		<h3 class="book-name" data-bind="text: name"></h3>
-		<p>File: <span class="book-filepath">{{book.rel_path}}</span></p>
-		<p>Last accessed: {{metadata.last_access_date()}}</p>
-		<p>Last page read: <span data-bind="text: lastPageRead"></span></p>
-		<ul class="book-actions">
-			<li><a href="{{url_for('download_book', book=book.rel_path)}}">Download book archive</a></li>
-			<li><a href="{{url_for('show_book_list')}}">Back to book listing</a></li>
-		</ul>
-		<div class="pages">
-			<h5 class="page-list-label">Pages:</h5>
-			<ul class="page-list" data-bind="foreach: pages">
-				<li data-bind="css: { 
+        {{nav_menu()}}
+    </div>
+    <div class="metadata" data-bind="css: {shown: metadataVisible}">
+        <a href="#" class="close-button" data-bind="click: toggleMetadata">&times;</a>
+        <h3 class="book-name" data-bind="text: name"></h3>
+        <p>File: <span class="book-filepath">{{book.rel_path}}</span></p>
+        <p>Last accessed: {{metadata.last_access_date()}}</p>
+        <p>Last page read: <span data-bind="text: lastPageRead"></span></p>
+        <ul class="book-actions">
+            <li><a href="{{url_for('download_book', book=book.rel_path)}}">Download book archive</a></li>
+            <li><a href="{{url_for('show_book_list')}}">Back to book listing</a></li>
+        </ul>
+        <div class="pages">
+            <h5 class="page-list-label">Pages:</h5>
+            <ul class="page-list" data-bind="foreach: pages">
+                <li data-bind="css: { 
                     currentPage: isCurrentPage,
                     'current-img': isCurrentPage
                 }">
@@ -111,13 +111,13 @@
                         click: goToPage
                     ">
                         <img alt="" data-bind="attr: { src: thumb_url }" />
-						<span data-bind="text: index"></span>
-					</a>
-				</li>
-			</ul>
-		</div>
-	</div>
-	<div class="image-content" data-bind="
+                        <span data-bind="text: index"></span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="image-content" data-bind="
         css: {
             dualpage: dualPage(),
             rToL: rightToLeft(),
@@ -126,20 +126,20 @@
             fullSize: fitMode() == 'full' 
         }
     ">
-		<div class="loading-overlay"></div>
-		<!-- A second copy of the secondary image for right-to-left view. -->
-		<img class="left secondary page-image" alt=""
-			 data-bind="style: { maxHeight: getFitHeight() }"
-			 src="{{url_for('show_page', book=book.disp_relpath(), page=page+1)}}">
-		<!-- Main image for singe-image view. -->
-		<img class="main page-image" alt=""
-			 data-bind="style: { maxHeight: getFitHeight() }"
-			 src="{{url_for('show_page', book=book.disp_relpath(), page=page)}}">
-		<!-- Second image for dual-page view. -->
-		<img class="right secondary page-image" alt=""
-			 data-bind="style: { maxHeight: getFitHeight() }"
-			 src="{{url_for('show_page', book=book.disp_relpath(), page=page+1)}}">
-	</div>
+        <div class="loading-overlay"></div>
+        <!-- A second copy of the secondary image for right-to-left view. -->
+        <img class="left secondary page-image" alt=""
+             data-bind="style: { maxHeight: getFitHeight() }"
+             src="{{url_for('show_page', book=book.disp_relpath(), page=page+1)}}">
+        <!-- Main image for singe-image view. -->
+        <img class="main page-image" alt=""
+             data-bind="style: { maxHeight: getFitHeight() }"
+             src="{{url_for('show_page', book=book.disp_relpath(), page=page)}}">
+        <!-- Second image for dual-page view. -->
+        <img class="right secondary page-image" alt=""
+             data-bind="style: { maxHeight: getFitHeight() }"
+             src="{{url_for('show_page', book=book.disp_relpath(), page=page+1)}}">
+    </div>
     <a href="{{url_for('show_book', book=book.disp_relpath(), page=page-1)}}"
        class="big-link prev-link"
        data-bind="
@@ -166,7 +166,7 @@
         <span class="top">&rsaquo;</span>
         <span class="bottom">&rsaquo;</span>
     </a>
-	<div class="dynamic-alert alert-error alert">
-		<span class="alert-text"></span>
-	</div>
+    <div class="dynamic-alert alert-error alert">
+        <span class="alert-text"></span>
+    </div>
 {% endblock %}
