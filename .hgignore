@@ -4,3 +4,4 @@ syntax: glob
 books
 tmp.db
 venv
+tags

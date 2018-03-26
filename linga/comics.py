@@ -133,6 +133,7 @@ class Comic:
                 "file": f,
                 "index": index,
                 "url": url_for('show_page', book=self.disp_relpath(), page=index),
+                "page_url": url_for('show_book', book=self.disp_relpath(), page=index),
                 "thumb_url": url_for('show_pagethumb', book=self.disp_relpath(), page=index),
             })
             index += 1

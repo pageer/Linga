@@ -5,8 +5,10 @@ body.book-page {
 }
 
 .header {
-	position: relative;
+	position: fixed;
 	height: 4em;
+    width: 100%;
+    z-index: 10;
 }
 
 .header .menu-link {
@@ -38,6 +40,7 @@ body.book-page {
 
 .close-button:hover {
 	color: #d5d5d5;
+	text-decoration: none;
 }
 
 .metadata {
@@ -56,7 +59,7 @@ body.book-page {
 
 .metadata.shown {
 	visibility: visible;
-	z-index:10;
+	z-index:20;
 	opacity: 1;
 	transition-delay: 0s;
 }
@@ -112,8 +115,10 @@ body.book-page {
 }
 
 .nav-links {
+    position: absolute;
 	text-align: center;
 	position: absolute;
+    width: 90%;
 	right: 0;
 	left: 4em;
 }
@@ -125,13 +130,15 @@ body.book-page {
 	font-size: 120%;
 	font-family: sans-serif;
 	padding: 10px;
+    width: 80%;
 	border-radius: 0 0 5px 5px;
-	opacity: 0.2;
+	opacity: 0;
 	transition: opacity 1s;
 }
 
+.show-hover .nav-links .nav-control,
 .nav-links .nav-control:hover {
-	opacity: 0.8;
+	opacity: 0.9;
 }
 
 .nav-links .prev-link,
@@ -167,7 +174,7 @@ body.book-page {
 	text-decoration: none;
 }
 
-.show-hover .big-link,
+.big-link.show-hover,
 .big-link:hover {
 	opacity: 0.2;
 }
@@ -218,7 +225,7 @@ body.book-page {
 	background-repeat: no-repeat;
 	background-attachment: fixed;
 	background-position: center;
-	z-index:100
+	z-index: 9;
 }
 
 .image-content.loading .loading-overlay,
@@ -229,6 +236,7 @@ body.book-page {
 /* Base styles */
 .image-content .page-image {
 	max-width: none;
+    z-index: -1;
 }
 .image-content .page-image.secondary {
 	display: none;

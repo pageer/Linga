@@ -1,6 +1,7 @@
 /*globals ko, SCRIPT_ROOT */
 function ComicPage(page, parent) {
 	this.url = page.url;
+    this.page_url = page.page_url;
     this.thumb_url = page.thumb_url;
 	this.name = page.name;
 	this.index = page.index;
@@ -25,6 +26,7 @@ function ComicViewModel() {
 	this.dualPage = ko.observable(false);
     this.lastPageRead = ko.observable(1);
 	this.relpath = ko.observable('');
+    this.showAllUi = ko.observable(false);
 	
 	this.selectors = {
 		page_link: '.page-link',
@@ -119,7 +121,7 @@ function ComicViewModel() {
 	};
 	
 	this.pageLeft = function () {
-        var page = nextPageLeft();
+        var page = this.nextPageLeft();
         page.goToPage();
 	};
 	
@@ -144,9 +146,7 @@ function ComicViewModel() {
 	};
 	
 	this.getFitHeight = function () {
-		var pad = parseInt(this.$image_container.css('padding-top'), 10) +
-		          parseInt(this.$image_container.css('margin-top'), 10);
-		var height = $(window).height() - this.imageContainerOffset.top - pad;
+		var height = $(window).height();
 		return this.fitMode() === 'height' ? (height + 'px') : 'none';
 	};
 	
@@ -225,7 +225,7 @@ function ComicViewModel() {
 			self.goToPage(parseInt($(this).val(), 10));
 		});
 		$base.off('click').on('click', function () {
-			$base.find('.show-hover').removeClass('show-hover');
+            self.showAllUi(false);
 		});
 		
 		this.$image.off('load').on('load', function () {
@@ -239,7 +239,8 @@ function ComicViewModel() {
 		});
 		
 		var img_click = function () {
-			$(this).closest(self.selectors.image_container).toggleClass('show-hover');
+            var show_state = self.showAllUi();
+            self.showAllUi(!show_state);
 			return false;
 		};
 		this.$image.off('click').on('click', img_click);
