@@ -11,7 +11,8 @@ except:
 	
 sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 
-from linga import app, db, User, user_query
+from linga import app, db, User
+from linga.auth import user_query
 
 
 class TestUser(unittest.TestCase):

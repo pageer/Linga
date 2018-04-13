@@ -2,24 +2,43 @@ import os.path
 import StringIO
 from datetime import datetime
 from PIL import Image
-from flask import (render_template, make_response, redirect, abort, url_for,
-                   send_file, flash, request, session, jsonify, g)
-from flask_login import (login_required, login_user, logout_user, current_user)
-
-from linga import User, app, db, user_query
-from linga.comics import (ComicLister, Comic, ComicMetadata, comic_query,
-                          relpath_to_book, add_sep)
+from flask import (
+    render_template,
+    make_response,
+    redirect,
+    abort,
+    url_for,
+    send_file,
+    flash,
+    request,
+    session,
+    jsonify,
+    g
+)
+from flask_login import login_required, login_user, logout_user, current_user
+from linga import app, db
+from linga.auth import User
+from linga.comics import (
+    ComicLister,
+    Comic,
+    ComicMetadata,
+    get_recent_books,
+    get_metadata,
+    relpath_to_book,
+    add_sep
+)
 
 # Create any missing tables.
 db.create_all()
+
+def save_object(obj):
+    db.session.add(obj)
+    db.session.commit()
 
 def get_book(path):
     ret = relpath_to_book(add_sep(path))
     ret.set_rel_path(app.config['BOOK_PATH'])
     return ret
-
-def show_index():
-    return render_template('index.html')
 
 @app.route('/')
 @app.route('/books/')
@@ -28,7 +47,7 @@ def show_book_list():
     lister = ComicLister(app.config['BOOK_PATH'])
     book_list = lister.get_books()
     books = lister.group_by_path(book_list)
-    recent_metadata = comic_query().filter_by(user_id=current_user.user_id).order_by(ComicMetadata.last_access.desc()).limit(10)
+    recent_metadata = get_recent_books(current_user.user_id)
     return render_template('show-book-list.html',
                            books=books, recent=recent_metadata)
 
@@ -43,10 +62,10 @@ def show_book(book, page):
             page = meta.last_page if meta.last_page else 1
         else:
             meta.last_page = page
-            db.session.add(meta)
-            db.session.commit()
+            save_object(meta)
         return render_template('show-book.html', book=bk, book_id=book, metadata=meta, page=page)
-    except:
+    except Exception as err:
+        app.logger.error(err.message)
         abort(404)
 
 @app.route('/books/page/<string:book>/<int:page>')
@@ -59,7 +78,8 @@ def show_page(book, page):
         sio.write(img_file)
         sio.seek(0)
         return send_file(sio, 'image/jpg')
-    except Exception, err:
+    except Exception as err:
+        app.logger.error(err.message)
         abort(404)
 
 @app.route('/books/pagethumb/<string:book>/<int:page>')
@@ -101,7 +121,7 @@ def user_login():
         passwd = request.form.get('password')
         if len(username) > 3 and len(passwd) > 3:
             valid = False
-            usr = user_query().filter_by(email=username).first()
+            usr = get_user(username)
             if usr is not None:
                 valid = usr.check_password(passwd)
             if valid:
@@ -109,8 +129,7 @@ def user_login():
             if valid:
                 usr.last_login = datetime.now()
                 try:
-                    db.session.add(usr)
-                    db.session.commit()
+                    save_object(usr)
                     return redirect(request.args.get('next') or url_for('show_book_list'))
                 except Exception as ex:
                     flash(ex)
@@ -129,20 +148,37 @@ def user_logout():
 def user_create():
     if not app.config.get('ALLOW_REGISTRATION'):
         abort(403)
-    username = ''
+
+    username = request.form.get('email')
+    passwd = request.form.get('password')
+    confirm_passwd = request.form.get('confirm_password')
+
     if request.method == 'POST':
-        username = request.form.get('email')
-        passwd = request.form.get('password')
-        confirm_passwd = request.form.get('confirm_password')
-        if len(username) > 3 and len(passwd) > 3 and passwd == confirm_passwd:
-            usr = User(username, passwd)
-            try:
-                db.session.add(usr)
-                db.session.commit()
-                flash("Created user")
-            except Exception as ex:
-                flash(ex)
+        return user_create_post(username, passwd, confirm_passwd)
+
     return render_template('user/create.html', email=username)
+
+
+def user_create_post(username, passwd, confirm_passwd):
+    if len(username) < 3 and len(passwd) < 3:
+        flash("Invalid username or password!")
+        return redirect(url_for('user_create'))
+
+    if passwd != confirm_passwd:
+        flash("Passwords don't match!")
+        return redirect(url_for('user_create'))
+        
+    usr = User(username, passwd)
+    try:
+        save_object(usr)
+        flash("Created user")
+        return redirect(url_for('user_login'))
+    except Exception as ex:
+        flash("Error creating user - " + ex.message)
+        app.logger.error(ex)
+
+    return render_template('user/create.html', email=username)
+
 
 @app.route('/book/update/page', methods=['POST'])
 @login_required
@@ -156,7 +192,7 @@ def update_page():
     dual = request.form.get('dual') == 'true'
     
     if path and uid and page:
-        data = comic_query().filter_by(user_id=uid, book_relpath=path).first()
+        data = get_metadata(uid, path)
         if data is None:
             data = ComicMetadata(uid, path)
         data.last_access = datetime.now()
@@ -167,8 +203,7 @@ def update_page():
         if finished:
             data.finished_book = True
         try:
-            db.session.add(data)
-            db.session.commit()
+            save_object(data)
             return jsonify({'success': True})
         except Exception as err:
             return jsonify({'success': False, 'error': err.message})

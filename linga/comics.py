@@ -65,6 +65,17 @@ def filename_to_bookname(path):
 def comic_query():
     return db.session.query(ComicMetadata)
 
+def get_recent_books(user, limit=10):
+    return db.session \
+        .query(ComicMetadata) \
+        .filter_by(user_id=user) \
+        .order_by(ComicMetadata.last_access.desc()) \
+        .limit(limit)
+
+def get_metadata(user_id, bookpath):
+    return db.session.query(ComicMetadata) \
+        .filter_by(user_id=user_id, book_relpath=bookpath) \
+        .first()
 
 class InvalidPageError(IndexError):
     def __init__(self, page=0):
@@ -85,7 +96,7 @@ class Comic:
     def metadata(self, userid):
         if self._metadata is None:
             try:
-                dat = comic_query().filter_by(user_id=userid, book_relpath=self.rel_path).first()
+                dat = get_metadata(userid, self.rel_path)
             except:
                 dat = ComicMetadata(userid, self.rel_path)
             if dat:

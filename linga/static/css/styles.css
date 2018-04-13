@@ -163,7 +163,7 @@ body.book-page {
 .big-link {
 	display: block;
 	background-color: #f1f1f1;
-	position: absolute;
+	position: fixed;
 	top: 0;
 	bottom: 0;
 	width: 100px;

@@ -3,21 +3,24 @@ import werkzeug.security
 from flask_login import UserMixin, login_user, current_user
 from linga import app, db, login_manager
 
-
 login_manager.login_view = 'user_login'
 
 @login_manager.user_loader
 def load_user(userid):
-    return user_query().filter_by(user_id=userid).first()
-
-#@login_manager.token_loader
-#def load_token(token):
-#   uid, tok = token.split('|', 1)
-#   return user_query().filter_by(user_id=int(uid)).first()
+    return get_user_by_id(userid)
 
 def user_query():
     return db.session.query(User)
 
+def get_user(username):
+    return user_query() \
+        .filter_by(email=username) \
+        .first()
+
+def get_user_by_id(user_id):
+    return user_query() \
+        .filter_by(user_id=user_id) \
+        .first()
 
 class User(db.Model, UserMixin):
     __tablename__ = 'linga_users'

@@ -1,4 +1,5 @@
 /*globals ko, SCRIPT_ROOT */
+
 function ComicPage(page, parent) {
     this.url = page.url;
     this.page_url = page.page_url;
@@ -29,7 +30,6 @@ function ComicViewModel() {
     this.showAllUi = ko.observable(false);
     
     this.selectors = {
-        page_link: '.page-link',
         main_image: '.page-image.main',
         sec_image: '.page-image.secondary',
         image_container: '.image-content',
@@ -206,7 +206,6 @@ function ComicViewModel() {
         this.$image = $base.find(this.selectors.main_image);
         this.$sec_image = $base.find(this.selectors.sec_image);
         this.$image_container = $base.find(this.selectors.image_container);
-        this.imageContainerOffset = this.$image_container.offset();
         this.$alert = $base.find(this.selectors.alert);
     };
     
