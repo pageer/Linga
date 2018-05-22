@@ -5,3 +5,4 @@ books
 tmp.db
 venv
 tags
+bower_components
