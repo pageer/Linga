@@ -120,7 +120,10 @@ class Comic:
     def get_archive(self):
         if not self.archive:
             if self.mimetype() == 'application/rar':
-                self.archive = rarfile.RarFile(self.path, 'r')
+                try:
+                    self.archive = rarfile.RarFile(self.path, 'r')
+                except:
+                    self.archive = zipfile.ZipFile(self.path, 'r')
             else:
                 self.archive = zipfile.ZipFile(self.path, 'r')
         return self.archive

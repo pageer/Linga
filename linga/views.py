@@ -17,7 +17,7 @@ from flask import (
 )
 from flask_login import login_required, login_user, logout_user, current_user
 from linga import app, db
-from linga.auth import User
+from linga.auth import User, get_user
 from linga.comics import (
     ComicLister,
     Comic,
