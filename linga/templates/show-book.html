@@ -8,7 +8,11 @@
     <div class="nav-control">
         <a href="{{url_for('show_book', book=book.disp_relpath(), page=page-1)}}"
            class="prev-link"
-           data-bind="click: pageLeft, attr: { href: nextPageLeft().page_url }">
+           data-bind="
+               click: pageLeft,
+               clickBubble: false,
+               attr: { href: nextPageLeft().page_url }
+               ">
             &#8656;<span data-bind="text: leftLinkText"></span>
         </a>
         <select class="curr-page" data-bind="
@@ -16,24 +20,27 @@
             optionsText: 'index',
             optionsValue: 'index',
             value: pageNumber">
-        </select> of <span class="total-pages" data-bind="text: pageCount()"></span>
+        </select> of <span class="total-pages" data-bind="text: pageCount(), clickBubble: false"></span>
         <a href="{{url_for('show_book', book=book.disp_relpath(), page=page+1)}}" 
            class="next-link"
-           data-bind="click: pageRight, attr: { href: nextPageRight().page_url }">
+           data-bind="
+               click: pageRight,
+               clickBubble: false,
+               attr: { href: nextPageRight().page_url }">
             <span data-bind="text: rightLinkText"></span>&#8658;
         </a>
         <span class="separator">|</span>
-        <select name="fitmode" class="img-size" data-bind="value: fitMode">
+        <select name="fitmode" class="img-size" data-bind="value: fitMode, clickBubble: false">
             {{option('Full Size', 'full')}}
             {{option('Fit Height', 'height')}}
             {{option('Fit Width', 'width')}}
         </select>
         <label title="Right-to-left reading">
-            <input name="rtol" type="checkbox" value="1" data-bind="checked: rightToLeft">
+            <input name="rtol" type="checkbox" value="1" data-bind="checked: rightToLeft, clickBubble: false">
             L &#8592; R
         </label>
         <label title="Display two pages at a time">
-            <input name="dualpage" type="checkbox" value="1" data-bind="checked: dualPage">
+            <input name="dualpage" type="checkbox" value="1" data-bind="checked: dualPage, clickBubble: false">
             2-Page
         </label>
     </div>
@@ -82,12 +89,13 @@
     <div class="header" data-bind="css: { 'show-hover': showAllUi }">
         <a href="#" class="menu-link" data-bind="
             click: toggleMetadata,
+            clickBubble: false,
             visible: !metadataVisible()
         ">&#9776;</a>
         {{nav_menu()}}
     </div>
     <div class="metadata" data-bind="css: {shown: metadataVisible}">
-        <a href="#" class="close-button" data-bind="click: toggleMetadata">&times;</a>
+        <a href="#" class="close-button" data-bind="click: toggleMetadata, clickBubble: false">&times;</a>
         <h3 class="book-name" data-bind="text: name"></h3>
         <p>File: <span class="book-filepath">{{book.rel_path}}</span></p>
         <p>Last accessed: {{metadata.last_access_date()}}</p>
@@ -108,7 +116,8 @@
                             title: name,
                             href: url
                         },
-                        click: goToPage
+                        click: goToPage,
+                        clickBubble: false
                     ">
                         <img alt="" data-bind="attr: { src: thumb_url }" />
                         <span data-bind="text: index"></span>
@@ -144,6 +153,7 @@
        class="big-link prev-link"
        data-bind="
             click: pageLeft,
+            clickBubble: false,
             attr: {
                 href: nextPageLeft().page_url
             },
@@ -157,6 +167,7 @@
        class="big-link next-link"
        data-bind="
             click: pageRight,
+            clickBubble: false,
             attr: {
                 href: nextPageRight().page_url
             },

@@ -89,14 +89,6 @@ describe("A comic book", function() {
 		expect(this.book.updatePage).toHaveBeenCalled();
 	});
 	
-	describe("when dual-page mode is enabled", function() {
-        beforeEach(function() {
-            this.book.addPages(this.test_pages);
-            spyOn(this.book, 'setPageInDom');
-            spyOn(this.book, 'updatePage');
-        });
-	});
-	
 	it("should ignore navigation to before first page", function() {
 		spyOn(this.book, 'updatePage');
         spyOn(this.book, 'setPageInDom');
@@ -236,7 +228,7 @@ describe("A comic book", function() {
 
             var page = this.book.nextPageLeft();
 
-            expect(page.name).toEqual('page7');
+            expect(page.name).toEqual('page6');
         });
     });
 
@@ -279,13 +271,13 @@ describe("A comic book", function() {
             expect(page.name).toEqual('page5');
         });
 
-        it("should get page 7 when on page 6 and dual-page enabled", function() {
+        it("should get page 6 when on page 6 and dual-page enabled", function() {
             this.book.pageNumber(6);
             this.book.dualPage(true);
 
             var page = this.book.nextPageRight();
 
-            expect(page.name).toEqual('page7');
+            expect(page.name).toEqual('page6');
         });
 
         it("should get page 2 when on page 3 and right-to-left enabled", function() {

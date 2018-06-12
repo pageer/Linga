@@ -284,7 +284,7 @@ body.book-page {
 .image-content.dualpage.fitHeight .page-image.main,
 .image-content.dualpage.fitHeight .page-image.secondary {
 	display: inline-block;
-	position: relative;
+	/*position: relative;*/
 }
 .image-content.dualpage.fitHeight .page-image.left.secondary {
 	display: none;
@@ -302,7 +302,7 @@ body.book-page {
 .image-content.dualpage.fullSize .page-image.main,
 .image-content.dualpage.fullSize .page-image.secondary {
 	display: inline-block;
-	position: relative;
+	/*position: relative;*/
 }
 .image-content.dualpage.fullSize .page-image.left.secondary {
 	display: none;

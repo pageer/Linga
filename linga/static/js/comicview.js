@@ -91,6 +91,9 @@ function ComicViewModel() {
         var next_index = Math.max(0, curr_index - offset);
         if (this.rightToLeft()) {
             next_index = Math.min(this.pageCount() - 1, curr_index + offset);
+            if (this.dualPage() && this.pageCount() - 1 < curr_index + offset) {
+                next_index = curr_index;
+            }
         }
         return this.pages()[next_index];
     }, this);
@@ -99,6 +102,9 @@ function ComicViewModel() {
         var curr_index = this.pageNumber() - 1;
         var offset = this.dualPage() ? 2 : 1;
         var next_index = Math.min(this.pageCount() - 1, curr_index + offset);
+        if (this.dualPage() && this.pageCount() - 1 < curr_index + offset) {
+            next_index = curr_index;
+        }
         if (this.rightToLeft()) {
             next_index = Math.max(0, curr_index - offset);
         }
@@ -190,7 +196,11 @@ function ComicViewModel() {
             this.$image.attr('src', this.currentPage().url);
             
             var next_page = this.pages()[this.pageNumber()];
-            this.$sec_image.attr('src', next_page.url);
+            if (next_page) {
+                this.$sec_image.attr('src', next_page.url);
+            } else {
+                this.$sec_image.attr('src', '');
+            }
             if (this.dualPage()) {
                 this.$sec_image.closest(this.selectors.image_container).addClass('sec-loading');
             }
@@ -223,9 +233,6 @@ function ComicViewModel() {
         $base.find(this.selectors.curr_page).off('change').on('change', function () {
             self.goToPage(parseInt($(this).val(), 10));
         });
-        $base.off('click').on('click', function () {
-            self.showAllUi(false);
-        });
         
         this.$image.off('load').on('load', function () {
             var $img = $(this).closest(self.selectors.image_container);
@@ -242,8 +249,8 @@ function ComicViewModel() {
             self.showAllUi(!show_state);
             return false;
         };
-        this.$image.off('click').on('click', img_click);
-        this.$sec_image.off('click').on('click', img_click);
+        this.$image.off('click.uitoggle').on('click.uitoggle', img_click);
+        this.$sec_image.off('click.uitoggle').on('click.uitoggle', img_click);
         
         var drag_start = function (e) {
             e.preventDefault();
@@ -251,6 +258,25 @@ function ComicViewModel() {
         this.$image.off('dragstart').on('dragstart', drag_start);
         this.$sec_image.off('dragstart').on('dragstart', drag_start);
         
+        // Remove keyboard focus from select controls
+        $('select').off('change.focus').on('change.focus', function() {
+            $(this).blur();
+            return true;
+        });
+
+        $(window).off('keypress').on('keypress', function(data) {
+            var at_bottom = $(window).height() + Math.ceil($(window).scrollTop()) >= $(document).height();
+            var key_code = data.charCode;
+            if (key_code == 32 && at_bottom) {
+                self.goToNext();
+            } else if (key_code == 46 || key_code == 62) {
+                self.pageRight();
+            } else if (key_code == 44 || key_code == 60) {
+                self.pageLeft();
+            }
+            return true;
+        });
+
         if (this.$image_container.swipe) {
             this.$image_container.swipe({
                 swipeLeft: function (event, direction, distance, duration, fingerCount, fingerData) {
