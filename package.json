@@ -1,0 +1,12 @@
+{
+    "name": "Linga",
+    "version": "0.1.0",
+    "author": "Peter Geer",
+    "private": true,
+    "devDependencies": {
+        "grunt": "~1.0.3",
+        "grunt-bower": "^0.21.4",
+        "grunt-contrib-copy": "^1.0.0",
+        "grunt-contrib-jshint": "~1.1.0"
+    }
+}

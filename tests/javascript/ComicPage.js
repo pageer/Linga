@@ -44,7 +44,7 @@ describe("A comic book", function() {
 	it("should be able to set and fetch the current page", function() {
 		this.book.addPages(this.test_pages);
 		spyOn(this.book, 'setPageInDom');
-		spyOn(this.book, 'updatePage')
+		spyOn(this.book, 'updatePage');
 		
 		expect(this.book.currentPage()).toEqual(this.book.pages()[0]);
 		
@@ -101,7 +101,7 @@ describe("A comic book", function() {
 		
 		expect(this.book.pageNumber()).toEqual(1);
 		
-		this.book.goToPage(2)
+		this.book.goToPage(2);
 		this.book.goToPage(0);
 		
 		expect(this.book.pageNumber()).toEqual(2);

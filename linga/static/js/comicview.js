@@ -277,16 +277,13 @@ function ComicViewModel() {
             return true;
         });
 
-        if (this.$image_container.swipe) {
-            this.$image_container.swipe({
-                swipeLeft: function (event, direction, distance, duration, fingerCount, fingerData) {
-                    self.pageRight();
-                },
-                swipeRight: function (event, direction, distance, duration, fingerCount, fingerData) {
-                    self.pageLeft();
-                }
-            });
-        }
+        this.hammer = new Hammer(this.$image_container.get(0));
+        this.hammer.on('swiperight', function() {
+            self.pageLeft();
+        });
+        this.hammer.on('swipeleft', function() {
+            self.pageRight();
+        });
     };
     
 }

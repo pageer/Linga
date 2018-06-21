@@ -18,5 +18,12 @@
   "devDependencies": {
     "jasmine-reporters": "^2.3.1",
     "jasmine-core": "jasmine#^3.1.0"
+  },
+  "dependencies": {
+    "hammerjs": "^2.0.8",
+    "knockout": "knockoutjs#^3.4.2",
+    "jquery": "^3.3.1",
+    "bootstrap": "^4.1.1",
+    "bootswatch": "^4.1.1"
   }
 }
