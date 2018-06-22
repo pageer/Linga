@@ -10,14 +10,6 @@ module.exports = function(grunt) {
         jshint: {
             all: ['Gruntfile.js', 'linga/static/js/*.js', 'tests/javascript/*.js']
         },
-        copy: {
-            main: {
-                files: [
-                    {expand: true, cwd: 'bower_components/knockout/dist', src: 'knockout.js', dest: 'linga/static/vendor/'},
-                    //{expand: true, src: 'bower_components/knockout/dist/knockout.js', dest: 'linga/static/vendor/knockout.js'},
-                ]
-            }
-        },
         bower: {
             dev: {
                 dest: 'linga/static/vendor/',
