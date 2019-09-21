@@ -36,7 +36,7 @@ class LingaTestCase(unittest.TestCase):
     def test_when_a_book_exists_it_should_appear_in_book_list(self, curr_user, db_query, isfile, listdir):
         listdir.return_value = ['foo.txt', 'bar.jpg', 'test.cbz']
         isfile.return_value = True
-        curr_user.return_value = User(123)
+        curr_user.return_value = User()
         db_query.return_value = None
 
         with self.app:

@@ -1,14 +1,30 @@
 module.exports = function(grunt) {
 
-    //require("matchdep").filterDev("grunt-*").forEach(grunt.loadNpmTasks);
     grunt.loadNpmTasks('grunt-contrib-jshint');
-    grunt.loadNpmTasks('grunt-contrib-copy');
+    grunt.loadNpmTasks('grunt-pylint');
     grunt.loadNpmTasks('grunt-bower');
+    grunt.loadNpmTasks('grunt-nose');
 
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         jshint: {
             all: ['Gruntfile.js', 'linga/static/js/*.js', 'tests/javascript/*.js']
+        },
+        pylint: {
+            src_package: {
+                src: 'linga'
+            },
+            tests: {
+                src: 'tests/python',
+                options: {
+                    disable: 'missing-docstring'
+                }
+            }
+        },
+        nose: {
+            main: {
+                src: 'tests/python/'
+            }
         },
         bower: {
             dev: {
@@ -45,8 +61,9 @@ module.exports = function(grunt) {
         }
     });
 
-    grunt.registerTask('default', ['jshint']);
-    grunt.registerTask('lint', ['jshint']);
-    //grunt.registerTask('deploy', ['copy']);
+    grunt.registerTask('lint', ['jshint', 'pylint']);
+    grunt.registerTask('test', ['nose']);
+    grunt.registerTask('validate', ['jshint', 'pylint', 'nose']);
     grunt.registerTask('deploy', ['bower']);
+    grunt.registerTask('default', ['jshint', 'pylint', 'nose', 'bower']);
 };

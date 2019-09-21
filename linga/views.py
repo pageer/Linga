@@ -1,26 +1,23 @@
+"""Pages and AJAX endpoints."""
 import os.path
 import StringIO
 from datetime import datetime
 from PIL import Image
 from flask import (
     render_template,
-    make_response,
     redirect,
     abort,
     url_for,
     send_file,
     flash,
     request,
-    session,
     jsonify,
-    g
 )
 from flask_login import login_required, login_user, logout_user, current_user
 from linga import app, db
 from linga.auth import User, get_user
 from linga.comics import (
     ComicLister,
-    Comic,
     ComicMetadata,
     get_recent_books,
     get_metadata,
@@ -52,18 +49,23 @@ def show_book_list():
                            books=books, recent=recent_metadata)
 
 @app.route('/books/read/<string:book>/page/<int:page>')
-@app.route('/books/read/<string:book>/', defaults = {'page': 0})
+@app.route('/books/read/<string:book>/', defaults={'page': 0})
 @login_required
 def show_book(book, page):
     try:
-        bk = get_book(book)
-        meta = bk.metadata(current_user.user_id)
+        full_book = get_book(book)
+        meta = full_book.metadata(current_user.user_id)
         if page == 0:
             page = meta.last_page if meta.last_page else 1
         else:
             meta.last_page = page
             save_object(meta)
-        return render_template('show-book.html', book=bk, book_id=book, metadata=meta, page=page)
+        return render_template(
+            'show-book.html',
+            book=full_book,
+            book_id=book,
+            metadata=meta,
+            page=page)
     except Exception as err:
         app.logger.error(err.message)
         abort(404)
@@ -72,8 +74,8 @@ def show_book(book, page):
 @login_required
 def show_page(book, page):
     try:
-        bk = get_book(book)
-        img_file = bk.get_file(page - 1)
+        book = get_book(book)
+        img_file = book.get_file(page - 1)
         sio = StringIO.StringIO()
         sio.write(img_file)
         sio.seek(0)
@@ -86,34 +88,35 @@ def show_page(book, page):
 @login_required
 def show_pagethumb(book, page):
     try:
-        bk = get_book(book)
-        img_file = bk.get_file(page - 1)
+        book = get_book(book)
+        img_file = book.get_file(page - 1)
         inio = StringIO.StringIO()
         outio = StringIO.StringIO()
         inio.write(img_file)
         inio.seek(0)
-        
-        im = Image.open(inio)
-        im.thumbnail((64, 64))
-        im.save(outio, "JPEG")
+
+        img = Image.open(inio)
+        img.thumbnail((64, 64))
+        img.save(outio, "JPEG")
         outio.seek(0)
-        
+
         return send_file(outio, 'image/jpg')
-    except Exeption, err:
-        return jsonify({'err': err.message})
+    except Exception as err:
+        app.logger.error(err.message)
         abort(404)
-            
+
 @app.route('/books/download/<string:book>')
 @login_required
 def download_book(book):
     try:
-        bk = get_book(book)
-        return send_file(os.path.abspath(bk.path), mimetype=bk.mimetype(), as_attachment=True,
-                         attachment_filename=bk.rel_path)
-    except:
+        book = get_book(book)
+        return send_file(os.path.abspath(book.path), mimetype=book.mimetype(), as_attachment=True,
+                         attachment_filename=book.rel_path)
+    except Exception as ex:
+        app.logger.error(ex.message)
         abort(404)
 
-@app.route('/user/login', methods = ['GET', 'POST'])
+@app.route('/user/login', methods=['GET', 'POST'])
 def user_login():
     username = ''
     if request.method == 'POST':
@@ -139,12 +142,12 @@ def user_login():
             flash('Invalid username or password')
     return render_template('user/login.html', email=username)
 
-@app.route('/user/logout', methods = ['GET', 'POST'])
+@app.route('/user/logout', methods=['GET', 'POST'])
 def user_logout():
     logout_user()
     return redirect(url_for('user_login'))
 
-@app.route('/user/create', methods = ['GET', 'POST'])
+@app.route('/user/create', methods=['GET', 'POST'])
 def user_create():
     if not app.config.get('ALLOW_REGISTRATION'):
         abort(403)
@@ -167,7 +170,7 @@ def user_create_post(username, passwd, confirm_passwd):
     if passwd != confirm_passwd:
         flash("Passwords don't match!")
         return redirect(url_for('user_create'))
-        
+
     usr = User(username, passwd)
     try:
         save_object(usr)
@@ -190,7 +193,7 @@ def update_page():
     fit_mode = request.form.get('fitmode') or "full"
     rtol = request.form.get('rtl') == 'true'
     dual = request.form.get('dual') == 'true'
-    
+
     if path and uid and page:
         data = get_metadata(uid, path)
         if data is None:
@@ -208,4 +211,3 @@ def update_page():
         except Exception as err:
             return jsonify({'success': False, 'error': err.message})
     return jsonify({'success': False, 'error': 'Missing data'})
-
