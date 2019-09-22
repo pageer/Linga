@@ -38,7 +38,7 @@ class User(db.Model, UserMixin):
         self.last_login = None
 
     def get_id(self):
-        return unicode(self.user_id)
+        return str(self.user_id)
 
     #def get_auth_token(self):
     #   tok = "%s|%s" % (self.user_id, make_secure_token(str(self.user_id), self.password))
