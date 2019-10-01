@@ -2,7 +2,7 @@ module.exports = function(grunt) {
 
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-pylint');
-    grunt.loadNpmTasks('grunt-bower');
+    grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-nose');
 
     grunt.initConfig({
@@ -26,37 +26,37 @@ module.exports = function(grunt) {
                 src: 'tests/python/'
             }
         },
-        bower: {
-            dev: {
-                dest: 'linga/static/vendor/',
-                js_dest: 'linga/static/vendor/js/',
-                css_dest: 'linga/static/vendor/css/',
-                options: {
-                    keepExpandedHierarchy: false,
-                    packageSpecific: {
-                        jquery: {
-                            files: ['dist/jquery.min.js']
-                        },
-                        hammerjs: {
-                            files: ['hammer.min.js']
-                        },
-                        bootstrap: {
-                            files: [
-                                'dist/css/bootstrap-grid.min.css',
-                                'dist/css/bootstrap-reboot.min.css',
-                                'dist/js/bootstrap.bundle.min.js',
-                                'dist/js/bootstrap.min.js'
-                            ]
-                        },
-                        bootswatch: {
-                            files: ['dist/cyborg/bootstrap.min.css']
-                        }
-                    },
-                    ignorePackages: [
-                        'jasmine-core',
-                        'jasmine-reporters'
-                    ]
-                }
+        copy: {
+            main: {
+                files: [{
+                    expand: true,
+                    src: 'node_modules/jquery/dist/jquery.min.js',
+                    dest: 'linga/static/vendor/js/jquery.min.js'
+                }, {
+                    expand: true,
+                    src: 'node_modules/knockout/build/output/knockout-latest.js',
+                    dest: 'linga/static/vendor/js/knockout-latest.js'
+                }, {
+                    expand: true,
+                    src: 'node_modules/hammerjs/hammer.min.js',
+                    dest: 'linga/static/vendor/js/hammer.min.js'
+                }, {
+                    expand: true,
+                    src: 'node_modules/bootstrap/dist/js/*.min.js',
+                    dest: 'linga/static/vendor/js/',
+                    flatten: true,
+                    filter: 'isFile'
+                }, {
+                    expand: true,
+                    src: 'node_modules/bootstrap/dist/css/*.min.css',
+                    dest: 'linga/static/vendor/css/',
+                    flatten: true,
+                    filter: 'isFile'
+                }, {
+                    expand: true,
+                    src: 'node_modules/bootswatch/dist/cyborg/bootstrap.min.css',
+                    dest: 'linga/static/vendor/css/cyborg/bootstrap.min.css'
+                }]
             }
         }
     });
@@ -64,6 +64,6 @@ module.exports = function(grunt) {
     grunt.registerTask('lint', ['jshint', 'pylint']);
     grunt.registerTask('test', ['nose']);
     grunt.registerTask('validate', ['jshint', 'pylint', 'nose']);
-    grunt.registerTask('deploy', ['bower']);
-    grunt.registerTask('default', ['jshint', 'pylint', 'nose', 'bower']);
+    grunt.registerTask('deploy', ['copy']);
+    grunt.registerTask('default', ['jshint', 'pylint', 'nose', 'copy']);
 };

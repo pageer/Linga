@@ -1,6 +1,6 @@
 """Pages and AJAX endpoints."""
+import io
 import os.path
-import StringIO
 from datetime import datetime
 from PIL import Image
 from flask import (
@@ -76,12 +76,12 @@ def show_page(book, page):
     try:
         book = get_book(book)
         img_file = book.get_file(page - 1)
-        sio = StringIO.StringIO()
+        sio = io.BytesIO()
         sio.write(img_file)
         sio.seek(0)
         return send_file(sio, 'image/jpg')
     except Exception as err:
-        app.logger.error(err.message)
+        app.logger.error(str(err))
         abort(404)
 
 @app.route('/books/pagethumb/<string:book>/<int:page>')
@@ -90,8 +90,8 @@ def show_pagethumb(book, page):
     try:
         book = get_book(book)
         img_file = book.get_file(page - 1)
-        inio = StringIO.StringIO()
-        outio = StringIO.StringIO()
+        inio = io.BytesIO()
+        outio = io.BytesIO()
         inio.write(img_file)
         inio.seek(0)
 
@@ -113,7 +113,7 @@ def download_book(book):
         return send_file(os.path.abspath(book.path), mimetype=book.mimetype(), as_attachment=True,
                          attachment_filename=book.rel_path)
     except Exception as ex:
-        app.logger.error(ex.message)
+        app.logger.error(str(err))
         abort(404)
 
 @app.route('/user/login', methods=['GET', 'POST'])
@@ -177,7 +177,7 @@ def user_create_post(username, passwd, confirm_passwd):
         flash("Created user")
         return redirect(url_for('user_login'))
     except Exception as ex:
-        flash("Error creating user - " + ex.message)
+        flash("Error creating user - " + str(ex))
         app.logger.error(ex)
 
     return render_template('user/create.html', email=username)
@@ -209,5 +209,5 @@ def update_page():
             save_object(data)
             return jsonify({'success': True})
         except Exception as err:
-            return jsonify({'success': False, 'error': err.message})
+            return jsonify({'success': False, 'error': str(err)})
     return jsonify({'success': False, 'error': 'Missing data'})
