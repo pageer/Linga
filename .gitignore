@@ -1,0 +1,9 @@
+*.pyc
+venv
+vendor
+tags
+tags.temp
+tags.lock
+*.log
+node_modules
+__pycache__
