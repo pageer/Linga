@@ -12,10 +12,12 @@ module.exports = function(grunt) {
         },
         pylint: {
             src_package: {
-                src: 'linga'
-            },
-            tests: {
-                src: 'tests/python',
+                src: 'linga',
+                options: {
+                    externalPylint: true,
+                    disable: 'missing-docstring',
+                    force: true
+                } }, tests: { src: 'tests/python',
                 options: {
                     disable: 'missing-docstring'
                 }
@@ -31,15 +33,21 @@ module.exports = function(grunt) {
                 files: [{
                     expand: true,
                     src: 'node_modules/jquery/dist/jquery.min.js',
-                    dest: 'linga/static/vendor/js/jquery.min.js'
+                    dest: 'linga/static/vendor/js/',
+                    flatten: true,
+                    filter: 'isFile'
                 }, {
                     expand: true,
                     src: 'node_modules/knockout/build/output/knockout-latest.js',
-                    dest: 'linga/static/vendor/js/knockout-latest.js'
+                    dest: 'linga/static/vendor/js/',
+                    flatten: true,
+                    filter: 'isFile'
                 }, {
                     expand: true,
                     src: 'node_modules/hammerjs/hammer.min.js',
-                    dest: 'linga/static/vendor/js/hammer.min.js'
+                    dest: 'linga/static/vendor/js/',
+                    flatten: true,
+                    filter: 'isFile'
                 }, {
                     expand: true,
                     src: 'node_modules/bootstrap/dist/js/*.min.js',
@@ -55,7 +63,9 @@ module.exports = function(grunt) {
                 }, {
                     expand: true,
                     src: 'node_modules/bootswatch/dist/cyborg/bootstrap.min.css',
-                    dest: 'linga/static/vendor/css/cyborg/bootstrap.min.css'
+                    dest: 'linga/static/vendor/css/cyborg/',
+                    flatten: true,
+                    filter: 'isFile'
                 }]
             }
         }

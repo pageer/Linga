@@ -1,11 +1,19 @@
 INSTALLATION
 ============
 To install Linga, you'll need:
- - Python >= 2.7
- - pip
+ - Python 3
+ - Virutalenv
+ - Yarn
 
-To install the Python dependencies, run:
-   pip install -r requirements.txt
+To install Linga with a virtual environment, run the following:
+ - virtualenv --python=python3 venv
+ - On Linux/UNIX: . venv/bin/activate 
+ - On Windows:    venv/scripts/activate)
+ - pip install -r requirements.txt
+ - yarn install
+ - grunt deploy
+Linga is now ready to run.  Just configure your web serber to point to the appropriate directory.
+
 
 THIRD-PARTY PACKAGES
 ====================
