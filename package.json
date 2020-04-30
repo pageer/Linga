@@ -16,7 +16,7 @@
         "bootswatch": "^4.3.1",
         "grunt-contrib-copy": "^1.0.0",
         "hammerjs": "^2.0.8",
-        "jquery": "^3.4.1",
+        "jquery": "^3.5.0",
         "knockout": "^3.5.0",
         "popper.js": "^1.15.0"
     }
